@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "about": "Sobre el proyecto",
+    "testImages": "Imágenes de prueba",
+    "scientificArticle": "Artículo científico",
+    "github": "Github del proyecto"
+  },
+  "home": {
+    "title": "Detector de cáncer cerebral",
+    "subtitle": "Utilice inteligencia artificial para detectar y clasificar tumores cerebrales en imágenes de resonancia magnética.",
+    "uploadTitle": "Subir Foto",
+    "uploadDescription": "Envíe una imagen para procesamiento",
+    "uploadArea": "Haga clic para seleccionar o arrastre una imagen",
+    "uploadFormats": "PNG, JPG, GIF hasta 10MB"
+  },
+  "help": {
+    "button": "¿Cómo utilizar?",
+    "title": "Cómo utilizar el sistema",
+    "description": "Este sistema utiliza inteligencia artificial para detectar y clasificar tumores cerebrales en imágenes de resonancia magnética (IRM).",
+    "instructionsTitle": "Instrucciones de uso:",
+    "step1": "Haga clic en el área de carga o arrastre una imagen de resonancia magnética cerebral",
+    "step2": "Espere a que la imagen sea procesada por la inteligencia artificial",
+    "step3": "El sistema identificará si hay tumor y de qué tipo",
+    "step4": "Visualice el resultado con la clasificación y el nivel de confianza",
+    "tumorTypesTitle": "Tipos de tumores detectados:",
+    "meningioma": "Meningioma",
+    "meningiomaDesc": "Tumor que se desarrolla en las meninges, las membranas que rodean el cerebro y la médula espinal. Generalmente son benignos y de crecimiento lento.",
+    "glioma": "Glioma",
+    "gliomaDesc": "Tumor que se origina en las células gliales del cerebro. Puede variar de bajo a alto grado de malignidad y es uno de los tipos más comunes de tumores cerebrales.",
+    "pituitary": "Pituitario",
+    "pituitaryDesc": "Tumor que se desarrolla en la glándula pituitaria (hipófisis), responsable de producir hormonas importantes. La mayoría son benignos, pero pueden afectar el equilibrio hormonal.",
+    "noTumor": "Sin Tumor",
+    "noTumorDesc": "Imagen cerebral que no presenta signos de tumor. Utilizada como referencia para comparación con imágenes que contienen tumores.",
+    "note": "Nota importante:",
+    "noteText": "Este sistema es una herramienta de ayuda al diagnóstico. Los resultados siempre deben ser evaluados por un profesional de la salud calificado."
+  },
+  "footer": {
+    "rights": "Todos los derechos reservados."
+  },
+  "about": {
+    "title": "Sobre el Proyecto",
+    "subtitle": "Información sobre el desarrollo y objetivos de este proyecto.",
+    "descriptionTitle": "Descripción",
+    "description": "Este proyecto fue desarrollado utilizando Next.js 16 con React 19 y shadcn/ui para crear una interfaz moderna y responsiva. El objetivo es proporcionar una base sólida para el desarrollo de aplicaciones web.",
+    "techTitle": "Tecnologías Utilizadas",
+    "tech1": "Next.js 16 - Framework React para producción",
+    "tech2": "React 19 - Biblioteca JavaScript para construcción de interfaces",
+    "tech3": "TypeScript - Superset JavaScript con tipado estático",
+    "tech4": "Tailwind CSS 4 - Framework CSS utility-first",
+    "tech5": "shadcn/ui - Componentes reutilizables y accesibles",
+    "tech6": "Lucide React - Iconos modernos y elegantes",
+    "objectivesTitle": "Objetivos",
+    "objectives": "Crear una aplicación escalable, mantenible y con excelente experiencia de usuario, siguiendo las mejores prácticas de desarrollo web moderno."
+  },
+  "dropdown": {
+    "dataBasesTitle": "Bases de datos para Brain Tumor",
+    "kaggle": "Kaggle",
+    "kaggleDesc": "Conjuntos de datos completos",
+    "figshare": "Figshare",
+    "figshareDesc": "Imágenes utilizadas de otras investigaciones y estudios",
+    "scienceDataBank": "Science Data Bank",
+    "scienceDataBankDesc": "Base de datos orientada a estudios de medicina"
+  }
+}

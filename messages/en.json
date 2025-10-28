@@ -1,0 +1,65 @@
+{
+  "nav": {
+    "home": "Home",
+    "about": "About the project",
+    "testImages": "Test images",
+    "scientificArticle": "Scientific article",
+    "github": "Project Github"
+  },
+  "home": {
+    "title": "Brain Cancer Detector",
+    "subtitle": "Use artificial intelligence to detect and classify brain tumors in magnetic resonance imaging.",
+    "uploadTitle": "Photo Upload",
+    "uploadDescription": "Upload an image for processing",
+    "uploadArea": "Click to select or drag an image",
+    "uploadFormats": "PNG, JPG, GIF up to 10MB"
+  },
+  "help": {
+    "button": "How to use?",
+    "title": "How to use the system",
+    "description": "This system uses artificial intelligence to detect and classify brain tumors in magnetic resonance imaging (MRI).",
+    "instructionsTitle": "Usage instructions:",
+    "step1": "Click on the upload area or drag a brain magnetic resonance image",
+    "step2": "Wait for the image to be processed by artificial intelligence",
+    "step3": "The system will identify if there is a tumor and what type",
+    "step4": "View the result with classification and confidence level",
+    "tumorTypesTitle": "Types of tumors detected:",
+    "meningioma": "Meningioma",
+    "meningiomaDesc": "Tumor that develops in the meninges, the membranes that surround the brain and spinal cord. They are usually benign and slow-growing.",
+    "glioma": "Glioma",
+    "gliomaDesc": "Tumor that originates in the glial cells of the brain. It can range from low to high grade of malignancy and is one of the most common types of brain tumors.",
+    "pituitary": "Pituitary",
+    "pituitaryDesc": "Tumor that develops in the pituitary gland (hypophysis), responsible for producing important hormones. Most are benign, but can affect hormonal balance.",
+    "noTumor": "No Tumor",
+    "noTumorDesc": "Brain image that shows no signs of tumor. Used as a reference for comparison with images containing tumors.",
+    "note": "Important note:",
+    "noteText": "This system is a diagnostic aid tool. Results should always be evaluated by a qualified healthcare professional."
+  },
+  "footer": {
+    "rights": "All rights reserved."
+  },
+  "about": {
+    "title": "About the Project",
+    "subtitle": "Information about the development and objectives of this project.",
+    "descriptionTitle": "Description",
+    "description": "This project was developed using Next.js 16 with React 19 and shadcn/ui to create a modern and responsive interface. The goal is to provide a solid foundation for web application development.",
+    "techTitle": "Technologies Used",
+    "tech1": "Next.js 16 - React framework for production",
+    "tech2": "React 19 - JavaScript library for building user interfaces",
+    "tech3": "TypeScript - JavaScript superset with static typing",
+    "tech4": "Tailwind CSS 4 - Utility-first CSS framework",
+    "tech5": "shadcn/ui - Reusable and accessible components",
+    "tech6": "Lucide React - Modern and elegant icons",
+    "objectivesTitle": "Objectives",
+    "objectives": "Create a scalable, maintainable application with excellent user experience, following modern web development best practices."
+  },
+  "dropdown": {
+    "dataBasesTitle": "Brain Tumor databases",
+    "kaggle": "Kaggle",
+    "kaggleDesc": "Complete datasets",
+    "figshare": "Figshare",
+    "figshareDesc": "Images used from other research and studies",
+    "scienceDataBank": "Science Data Bank",
+    "scienceDataBankDesc": "Database focused on medical studies"
+  }
+}
