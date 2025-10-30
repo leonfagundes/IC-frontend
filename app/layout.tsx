@@ -19,6 +19,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "DetectIA",
   description: "Projeto desenvolvido por Leon Fagundes com Next.js",
+  icons: {
+    icon: '/brain_11666649.png',
+    shortcut: '/brain_11666649.png',
+    apple: '/brain_11666649.png',
+  },
 };
 
 export default function RootLayout({

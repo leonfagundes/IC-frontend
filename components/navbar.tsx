@@ -33,6 +33,11 @@ export function Navbar() {
       url: "https://www.scidb.cn/en/list?searchList=Brain%20Tumor&ordernum=", 
       descricao: t("dropdown.scienceDataBankDesc")
     },
+    { 
+      nome: t("dropdown.googleImages"), 
+      url: "https://www.google.com/search?q=brain+tumor+mri&udm=2", 
+      descricao: t("dropdown.googleImagesDesc")
+    },
   ];
 
   return (
@@ -91,7 +96,7 @@ export function Navbar() {
           </DropdownMenu>
           
           <Link 
-            href="/artigo-cientifico.pdf" 
+            href="/Artigo Iniciação Científica.pdf" 
             target="_blank"
             rel="noopener noreferrer"
             className="text-sm font-medium relative group transition-colors flex items-center gap-2 pb-1"
@@ -101,16 +106,46 @@ export function Navbar() {
             <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
           </Link>
           
-          <Link 
-            href="https://github.com/leonfagundes/IC-backend" 
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm font-medium relative group transition-colors flex items-center gap-2 pb-1"
-          >
-            <Github className="h-4 w-4 transition-transform group-hover:rotate-12 duration-300" />
-            <span className="relative z-10">{t("nav.github")}</span>
-            <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
-          </Link>
+          <DropdownMenu>
+            <DropdownMenuTrigger className="text-sm font-medium relative group transition-colors flex items-center gap-2 outline-none pb-1">
+              <Github className="h-4 w-4 transition-transform group-hover:rotate-12 duration-300" />
+              <span className="relative z-10">{t("nav.github")}</span>
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-data-[state=open]:rotate-180 duration-300" />
+              <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-72">
+              <DropdownMenuLabel>{t("dropdown.githubTitle")}</DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem asChild>
+                <a
+                  href="https://github.com/leonfagundes/IC-frontend"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 cursor-pointer"
+                >
+                  <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{t("dropdown.frontend")}</span>
+                    <span className="text-xs text-muted-foreground">{t("dropdown.frontendDesc")}</span>
+                  </div>
+                </a>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <a
+                  href="https://github.com/leonfagundes/IC-backend"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-2 cursor-pointer"
+                >
+                  <ExternalLink className="h-4 w-4 mt-0.5 flex-shrink-0" />
+                  <div className="flex flex-col">
+                    <span className="font-medium">{t("dropdown.backend")}</span>
+                    <span className="text-xs text-muted-foreground">{t("dropdown.backendDesc")}</span>
+                  </div>
+                </a>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
         </div>
         
         {/* Toggle de tema e idioma à direita */}
