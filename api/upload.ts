@@ -1,10 +1,9 @@
 import axios from 'axios';
 
-const API_BASE_URL = '';
 const REQUEST_TIMEOUT = 120000;
 
 const apiClient = axios.create({
-  baseURL: 'http://127.0.0.1:8000/',
+  baseURL: 'https://ic-backend-3zk0.onrender.com/',
   timeout: REQUEST_TIMEOUT,
   headers: {
     'Content-Type': 'multipart/form-data',
