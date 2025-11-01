@@ -6,3 +6,4 @@ export { LanguageToggle } from "./language-toggle";
 export { PhotoUpload } from "./photo-upload";
 export { HelpButton } from "./help-button";
 export { ResultModal } from "./result-modal";
+export { ErrorModal } from "./error-modal";

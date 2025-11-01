@@ -23,14 +23,18 @@
     "analyzingDesc": "Please wait while we process your image.",
     "startingServer": "Starting server...",
     "startingServerDesc": "We are preparing our server to process your image. This may take a few moments. Please do not close this window.",
-    "serverBusy": "Server under high demand",
-    "serverBusyDesc": "Our server is taking longer than expected. It may be under high demand at the moment. We appreciate your understanding and patience.",
+    "serverRestarting": "Server restarting...",
+    "serverRestartingDesc": "The server was shut down due to inactivity and is being restarted. This process takes approximately 2 minutes. Please wait.",
+    "timeRemaining": "Estimated time remaining:",
     "title": "Analysis Result",
     "description": "Here is the result of your image analysis.",
-    "globalAccuracy": "Model global accuracy:",
+    "globalAccuracy": "Model's global accuracy:",
     "predictionConfidence": "Confidence in this prediction:",
     "warning": "Important:",
-    "warningText": "This result is only a prediction from the AI model and does not replace a professional medical evaluation. Always consult a specialist doctor for accurate diagnoses."
+    "warningText": "This result is only a prediction from the AI model and does not replace a professional medical evaluation. Always consult a specialist doctor for accurate diagnoses.",
+    "invalidImageTitle": "Invalid Image",
+    "invalidImageDesc": "The model only accepts grayscale brain MRI images. The image cannot contain circles, arrows, text, or any colored pixels.",
+    "invalidImageButton": "I Understand"
   },
   "help": {
     "button": "How Does It Work?",

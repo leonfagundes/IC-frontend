@@ -18,7 +18,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "DetectIA",
-  description: "Projeto desenvolvido por Leon Fagundes com Next.js",
+  description: "Classifique imagens de tumor cerebral com inteligência artificial.",
   icons: {
     icon: '/brain_11666649.png',
     shortcut: '/brain_11666649.png',

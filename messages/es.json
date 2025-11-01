@@ -23,14 +23,18 @@
     "analyzingDesc": "Espere mientras procesamos su imagen.",
     "startingServer": "Iniciando servidor...",
     "startingServerDesc": "Estamos preparando nuestro servidor para procesar su imagen. Esto puede tomar algunos instantes. Por favor, no cierre esta ventana.",
-    "serverBusy": "Servidor con alta demanda",
-    "serverBusyDesc": "Nuestro servidor está tardando más de lo esperado. Puede estar bajo alta demanda en este momento. Agradecemos su comprensión y paciencia.",
+    "serverRestarting": "Servidor reiniciando...",
+    "serverRestartingDesc": "El servidor fue apagado por inactividad y está siendo reiniciado. Este proceso toma aproximadamente 2 minutos. Por favor, espere.",
+    "timeRemaining": "Tiempo estimado restante:",
     "title": "Resultado del Análisis",
     "description": "Aquí está el resultado del análisis de su imagen.",
     "globalAccuracy": "Precisión global del modelo:",
     "predictionConfidence": "Confianza en esta predicción:",
     "warning": "Importante:",
-    "warningText": "Este resultado es solo una predicción del modelo de IA y no reemplaza una evaluación médica profesional. Siempre consulte a un médico especialista para diagnósticos precisos."
+    "warningText": "Este resultado es solo una predicción del modelo de IA y no reemplaza una evaluación médica profesional. Siempre consulte a un médico especialista para diagnósticos precisos.",
+    "invalidImageTitle": "Imagen Inválida",
+    "invalidImageDesc": "El modelo solo acepta imágenes de resonancia magnética cerebral en escala de grises. La imagen no puede contener círculos, flechas, textos o píxeles de color.",
+    "invalidImageButton": "Entendido"
   },
   "help": {
     "button": "¿Cómo Funciona?",

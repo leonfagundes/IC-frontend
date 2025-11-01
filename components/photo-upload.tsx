@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { uploadImage } from "@/api/upload";
 import { ResultModal } from "./result-modal";
+import { ErrorModal } from "./error-modal";
 import { useI18n } from "./i18n-provider";
 
 export function PhotoUpload() {
@@ -16,6 +17,7 @@ export function PhotoUpload() {
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
   const [prediction, setPrediction] = useState<{ class: string; confidence?: number; uploadedImage?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -102,13 +104,19 @@ export function PhotoUpload() {
         uploadedImage: preview || undefined
       });
       
-    } catch (error) {
-      setUploadError(
-        error instanceof Error 
-          ? error.message 
-          : "Erro ao enviar imagem. Tente novamente."
-      );
-      setShowResultModal(false); // Fecha o modal em caso de erro
+    } catch (error: any) {
+      // Verifica se é erro 400 com mensagem específica de validação
+      if (error.response?.status === 400 && error.response?.data?.detail === "Arquivo deve ser ressonancia") {
+        setShowResultModal(false);
+        setShowErrorModal(true);
+      } else {
+        setUploadError(
+          error instanceof Error 
+            ? error.message 
+            : "Erro ao enviar imagem. Tente novamente."
+        );
+        setShowResultModal(false);
+      }
     } finally {
       setIsUploading(false);
     }
@@ -235,6 +243,12 @@ export function PhotoUpload() {
         isLoading={isUploading}
         prediction={prediction}
         uploadedImage={preview}
+      />
+
+      {/* Modal de Erro */}
+      <ErrorModal
+        open={showErrorModal}
+        onOpenChange={setShowErrorModal}
       />
     </div>
   );

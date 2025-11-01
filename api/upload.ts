@@ -4,7 +4,7 @@ const API_BASE_URL = '';
 const REQUEST_TIMEOUT = 120000;
 
 const apiClient = axios.create({
-  baseURL: 'https://ic-backend-3zk0.onrender.com/',
+  baseURL: 'http://127.0.0.1:8000/',
   timeout: REQUEST_TIMEOUT,
   headers: {
     'Content-Type': 'multipart/form-data',

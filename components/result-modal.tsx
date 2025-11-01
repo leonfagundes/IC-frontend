@@ -29,6 +29,7 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
     title: "Analisando imagem...",
     description: "Aguarde enquanto processamos sua imagem."
   });
+  const [countdown, setCountdown] = useState(120);
 
   useEffect(() => {
     if (!isLoading) {
@@ -36,6 +37,7 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
         title: t("result.analyzing"),
         description: t("result.analyzingDesc")
       });
+      setCountdown(120); // Reset countdown quando não está carregando
       return;
     }
 
@@ -48,9 +50,10 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
 
     const timer20s = setTimeout(() => {
       setLoadingMessage({
-        title: t("result.serverBusy"),
-        description: t("result.serverBusyDesc")
+        title: t("result.serverRestarting"),
+        description: t("result.serverRestartingDesc")
       });
+      setCountdown(120); // Iniciar countdown em 2 minutos
     }, 20000);
 
     return () => {
@@ -58,6 +61,27 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
       clearTimeout(timer20s);
     };
   }, [isLoading, t]);
+
+  // Countdown timer que decrementa a cada segundo após 20s
+  useEffect(() => {
+    if (!isLoading || countdown <= 0) return;
+
+    // Só iniciar o countdown se estiver na mensagem de reinício (após 20s)
+    if (loadingMessage.title !== t("result.serverRestarting")) return;
+
+    const countdownInterval = setInterval(() => {
+      setCountdown((prev) => Math.max(0, prev - 1));
+    }, 1000);
+
+    return () => clearInterval(countdownInterval);
+  }, [isLoading, countdown, loadingMessage.title, t]);
+
+  // Formatar tempo em MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   // Mapear classes para nomes traduzidos e imagens
   const classInfo: Record<string, { name: string; description: string; image: string }> = {
@@ -101,6 +125,14 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
             <DialogDescription className="text-center max-w-md">
               {loadingMessage.description}
             </DialogDescription>
+            {loadingMessage.title === t("result.serverRestarting") && countdown > 0 && (
+              <div className="mt-4 space-y-2">
+                <p className="text-sm font-medium text-muted-foreground">{t("result.timeRemaining")}</p>
+                <p className="text-3xl font-bold text-primary tabular-nums">
+                  {formatTime(countdown)}
+                </p>
+              </div>
+            )}
           </div>
         ) : prediction && info ? (
           <>
