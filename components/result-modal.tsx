@@ -121,7 +121,7 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-3xl max-h-[90vh] overflow-y-auto">
         {isLoading ? (
           <div className="flex flex-col items-center justify-center py-8 sm:py-12 space-y-4 sm:space-y-6">
             <Loader2 className="h-12 w-12 sm:h-16 sm:w-16 animate-spin text-primary" />

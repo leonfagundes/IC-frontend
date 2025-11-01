@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const REQUEST_TIMEOUT = 180000; 
-const SIMULATE_DELAY = false; 
+const SIMULATE_DELAY = true; 
 const DELAY_TIME = 100000; 
 
 const apiClient = axios.create({
