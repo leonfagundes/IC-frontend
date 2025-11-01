@@ -53,7 +53,7 @@ export function HelpButton() {
             <span className="font-medium text-sm sm:text-base">{t("help.button")}</span>
           </Button>
         </DialogTrigger>
-        <DialogContent className="max-w-3xl max-h-[85vh] overflow-y-auto mx-4">
+        <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-3xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-xl sm:text-2xl">{t("help.title")}</DialogTitle>
             <DialogDescription className="text-sm sm:text-base pt-2">
