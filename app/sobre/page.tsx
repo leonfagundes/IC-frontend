@@ -8,12 +8,12 @@ export default function SobrePage() {
   const { t } = useI18n();
 
   return (
-    <div className="container mx-auto px-4 py-16">
-      <div className="max-w-5xl mx-auto space-y-12">
+    <div className="container mx-auto px-4 py-6 sm:py-12 lg:py-16">
+      <div className="max-w-5xl mx-auto space-y-6 sm:space-y-8 lg:space-y-12">
         {/* Header */}
-        <div className="space-y-4 text-center">
-          <h1 className="text-4xl font-bold tracking-tight">{t("about.title")}</h1>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+        <div className="space-y-3 sm:space-y-4 text-center">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight">{t("about.title")}</h1>
+          <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto px-2">
             {t("about.subtitle")}
           </p>
         </div>

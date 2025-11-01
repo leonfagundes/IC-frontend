@@ -7,8 +7,8 @@
     "github": "Github del Proyecto"
   },
   "home": {
-    "title": "Detección de Tumores Cerebrales con IA",
-    "subtitle": "Sistema inteligente de apoyo al diagnóstico que identifica y clasifica tumores cerebrales en exámenes de resonancia magnética.",
+    "title": "DetectIA",
+    "subtitle": "Sistema inteligente que realiza detección de tumores cerebrales con IA. Asiste en el diagnóstico identificando y clasificando tumores cerebrales en imágenes de resonancia magnética.",
     "uploadTitle": "Suba su Imagen",
     "uploadDescription": "Cargue un examen de resonancia magnética cerebral",
     "uploadArea": "Haga clic para seleccionar o arrastre una imagen",
@@ -24,7 +24,7 @@
     "startingServer": "Iniciando servidor...",
     "startingServerDesc": "Estamos preparando nuestro servidor para procesar su imagen. Esto puede tomar algunos instantes. Por favor, no cierre esta ventana.",
     "serverRestarting": "Servidor reiniciando...",
-    "serverRestartingDesc": "El servidor fue apagado por inactividad y está siendo reiniciado. Este proceso toma aproximadamente 2 minutos. Por favor, espere.",
+    "serverRestartingDesc": "El servidor fue apagado por inactividad y está siendo reiniciado. Este proceso toma aproximadamente 3 minutos. Por favor, espere.",
     "timeRemaining": "Tiempo estimado restante:",
     "title": "Resultado del Análisis",
     "description": "Aquí está el resultado del análisis de su imagen.",

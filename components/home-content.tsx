@@ -9,26 +9,26 @@ export function HomeContent() {
   const { t } = useI18n();
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-4 sm:py-8">
       <div className="max-w-4xl mx-auto">
-        <section className="text-center space-y-4 py-8">
-          <h1 className="text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+        <section className="text-center space-y-3 sm:space-y-4 py-4 sm:py-8">
+          <h1 className="text-3xl font-bold tracking-tight sm:text-4xl md:text-5xl lg:text-6xl">
             {t("home.title")}
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
             {t("home.subtitle")}
           </p>
         </section>
 
-        <section className="flex justify-center py-6">
+        <section className="flex justify-center py-4 sm:py-6">
           <Card className="w-full max-w-2xl">
-            <CardHeader className="text-center">
-              <CardTitle className="text-2xl">{t("home.uploadTitle")}</CardTitle>
-              <CardDescription>
+            <CardHeader className="text-center px-4 sm:px-6">
+              <CardTitle className="text-xl sm:text-2xl">{t("home.uploadTitle")}</CardTitle>
+              <CardDescription className="text-sm sm:text-base">
                 {t("home.uploadDescription")}
               </CardDescription>
             </CardHeader>
-            <CardContent>
+            <CardContent className="px-4 sm:px-6">
               <PhotoUpload />
             </CardContent>
           </Card>

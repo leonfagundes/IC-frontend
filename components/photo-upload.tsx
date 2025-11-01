@@ -139,7 +139,7 @@ export function PhotoUpload() {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           className={`
-            relative border-2 border-dashed rounded-lg p-12 text-center cursor-pointer
+            relative border-2 border-dashed rounded-lg p-8 sm:p-12 text-center cursor-pointer
             transition-colors duration-200
             ${
               isDragging
@@ -148,15 +148,15 @@ export function PhotoUpload() {
             }
           `}
         >
-          <div className="flex flex-col items-center gap-4">
-            <div className="rounded-full bg-primary/10 p-4">
-              <Upload className="h-8 w-8 text-primary" />
+          <div className="flex flex-col items-center gap-3 sm:gap-4">
+            <div className="rounded-full bg-primary/10 p-3 sm:p-4">
+              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
             </div>
-            <div className="space-y-2">
-              <p className="text-lg font-medium">
+            <div className="space-y-1 sm:space-y-2">
+              <p className="text-base sm:text-lg font-medium">
                 {t("home.uploadArea")}
               </p>
-              <p className="text-sm text-muted-foreground">
+              <p className="text-xs sm:text-sm text-muted-foreground">
                 {t("home.uploadFormats")}
               </p>
             </div>
@@ -192,33 +192,35 @@ export function PhotoUpload() {
             </div>
           )}
           
-          <div className="flex items-center justify-between gap-4">
-            <div className="flex gap-2">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4">
+            <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
               <Button
                 variant="outline"
                 onClick={handleClick}
                 disabled={isUploading}
-                className="flex items-center gap-2"
+                className="flex items-center justify-center gap-2 w-full sm:w-auto"
               >
                 <ImageIcon className="h-4 w-4" />
-                {t("home.chooseAnother")}
+                <span className="hidden sm:inline">{t("home.chooseAnother")}</span>
+                <span className="sm:hidden">Escolher outra</span>
               </Button>
               
               <Button
                 variant="outline"
                 onClick={handleRemove}
                 disabled={isUploading}
-                className="flex items-center gap-2 text-destructive hover:text-destructive"
+                className="flex items-center justify-center gap-2 text-destructive hover:text-destructive w-full sm:w-auto"
               >
                 <Trash2 className="h-4 w-4" />
-                {t("home.removeImage")}
+                <span className="hidden sm:inline">{t("home.removeImage")}</span>
+                <span className="sm:hidden">Remover</span>
               </Button>
             </div>
             
             <Button
               onClick={handleSubmit}
               disabled={isUploading}
-              className="flex items-center gap-2"
+              className="flex items-center justify-center gap-2 w-full sm:w-auto"
             >
               {isUploading ? (
                 <>

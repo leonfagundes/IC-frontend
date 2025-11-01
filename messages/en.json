@@ -7,8 +7,8 @@
     "github": "Project Github"
   },
   "home": {
-    "title": "Brain Tumor Detection with AI",
-    "subtitle": "Intelligent diagnostic support system that identifies and classifies brain tumors in MRI scans.",
+    "title": "DetectIA",
+    "subtitle": "Intelligent system that performs brain tumor detection with AI. Assists in diagnosis by identifying and classifying brain tumors in magnetic resonance imaging.",
     "uploadTitle": "Upload Your Image",
     "uploadDescription": "Upload a brain MRI scan",
     "uploadArea": "Click to select or drag an image",
@@ -24,7 +24,7 @@
     "startingServer": "Starting server...",
     "startingServerDesc": "We are preparing our server to process your image. This may take a few moments. Please do not close this window.",
     "serverRestarting": "Server restarting...",
-    "serverRestartingDesc": "The server was shut down due to inactivity and is being restarted. This process takes approximately 2 minutes. Please wait.",
+    "serverRestartingDesc": "The server was shut down due to inactivity and is being restarted. This process takes approximately 3 minutes. Please wait.",
     "timeRemaining": "Estimated time remaining:",
     "title": "Analysis Result",
     "description": "Here is the result of your image analysis.",

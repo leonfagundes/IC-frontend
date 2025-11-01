@@ -22,17 +22,17 @@ export function ErrorModal({ open, onOpenChange }: ErrorModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md mx-4">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-full bg-red-100 dark:bg-red-950 p-2">
-              <AlertCircle className="h-6 w-6 text-red-600 dark:text-red-400" />
+              <AlertCircle className="h-5 w-5 sm:h-6 sm:w-6 text-red-600 dark:text-red-400" />
             </div>
-            <DialogTitle className="text-xl text-red-600 dark:text-red-400">
+            <DialogTitle className="text-lg sm:text-xl text-red-600 dark:text-red-400">
               {t("result.invalidImageTitle")}
             </DialogTitle>
           </div>
-          <DialogDescription className="text-base leading-relaxed pt-2">
+          <DialogDescription className="text-sm sm:text-base leading-relaxed pt-2">
             {t("result.invalidImageDesc")}
           </DialogDescription>
         </DialogHeader>

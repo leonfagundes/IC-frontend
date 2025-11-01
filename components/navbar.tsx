@@ -1,9 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
+import NextImage from "next/image";
 import { ThemeToggle } from "./theme-toggle";
 import { LanguageToggle } from "./language-toggle";
-import { Github, ChevronDown, ExternalLink, Home, Info, Image, FileText } from "lucide-react";
+import { Github, ChevronDown, ExternalLink, Home, Info, Image, FileText, Menu, X } from "lucide-react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,9 +15,13 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useI18n } from "./i18n-provider";
+import { Button } from "@/components/ui/button";
 
 export function Navbar() {
   const { t } = useI18n();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mobileTestImagesOpen, setMobileTestImagesOpen] = useState(false);
+  const [mobileGithubOpen, setMobileGithubOpen] = useState(false);
   
   const imagemLinks = [
     { 
@@ -42,20 +48,44 @@ export function Navbar() {
 
   return (
     <nav className="border-b">
-      <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-        {/* Espaço vazio à esquerda para balancear o layout */}
-        <div className="w-9"></div>
-        
-        {/* Links centralizados */}
-        <div className="flex items-center gap-8">
-          <Link 
-            href="/" 
-            className="text-sm font-medium relative group transition-colors flex items-center gap-2 pb-1"
-          >
-            <Home className="h-4 w-4 transition-transform group-hover:scale-110 duration-300" />
-            <span className="relative z-10">{t("nav.home")}</span>
-            <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
+      <div className="container mx-auto px-4 py-4">
+        <div className="flex items-center justify-between lg:justify-start">
+          {/* Logo/Imagem - visível no mobile */}
+          <Link href="/" className="lg:hidden">
+            <NextImage 
+              src="/brain_11666649.png" 
+              alt="DetectIA Logo" 
+              width={40} 
+              height={40}
+              className="object-contain"
+            />
           </Link>
+
+          {/* Menu hambúrguer - visível apenas no mobile */}
+          <Button
+            variant="ghost"
+            size="icon"
+            className="lg:hidden"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </Button>
+
+          {/* Desktop - Layout original */}
+          <div className="hidden lg:flex items-center w-full">
+            {/* Espaço flexível à esquerda */}
+            <div className="flex-1"></div>
+            
+            {/* Links centralizados */}
+            <div className="flex items-center gap-8">
+            <Link 
+              href="/" 
+              className="text-sm font-medium relative group transition-colors flex items-center gap-2 pb-1"
+            >
+              <Home className="h-4 w-4 transition-transform group-hover:scale-110 duration-300" />
+              <span className="relative z-10">{t("nav.home")}</span>
+              <span className="absolute inset-x-0 -bottom-1 h-0.5 bg-primary scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-center"></span>
+            </Link>
           
           <Link 
             href="/sobre" 
@@ -146,13 +176,131 @@ export function Navbar() {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
+            </div>
+            
+            {/* Espaço flexível à direita com botões - Desktop */}
+            <div className="flex-1 flex items-center justify-end gap-2">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
+          </div>
         </div>
-        
-        {/* Toggle de tema e idioma à direita */}
-        <div className="flex items-center gap-2">
-          <LanguageToggle />
-          <ThemeToggle />
-        </div>
+
+        {/* Menu Mobile */}
+        {mobileMenuOpen && (
+          <div className="lg:hidden mt-4 pb-4 space-y-4 border-t pt-4">
+            <Link 
+              href="/" 
+              className="flex items-center gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Home className="h-4 w-4" />
+              <span className="text-sm font-medium">{t("nav.home")}</span>
+            </Link>
+            
+            <Link 
+              href="/sobre" 
+              className="flex items-center gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Info className="h-4 w-4" />
+              <span className="text-sm font-medium">{t("nav.about")}</span>
+            </Link>
+            
+            <div className="space-y-2">
+              <button 
+                className="flex items-center justify-between w-full gap-2 py-2 px-2 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                onClick={() => setMobileTestImagesOpen(!mobileTestImagesOpen)}
+              >
+                <div className="flex items-center gap-2">
+                  <Image className="h-4 w-4" />
+                  <span>{t("nav.testImages")}</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${mobileTestImagesOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mobileTestImagesOpen && (
+                <div className="pl-6 space-y-2">
+                  {imagemLinks.map((link) => (
+                    <a
+                      key={link.nome}
+                      href={link.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-start gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                      onClick={() => setMobileMenuOpen(false)}
+                    >
+                      <ExternalLink className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                      <div className="flex flex-col">
+                        <span className="text-sm font-medium">{link.nome}</span>
+                        <span className="text-xs text-muted-foreground">{link.descricao}</span>
+                      </div>
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <Link 
+              href="/Artigo Iniciação Científica.pdf" 
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <FileText className="h-4 w-4" />
+              <span className="text-sm font-medium">{t("nav.scientificArticle")}</span>
+            </Link>
+            
+            <div className="space-y-2">
+              <button 
+                className="flex items-center justify-between w-full gap-2 py-2 px-2 text-sm font-medium hover:bg-accent rounded-md transition-colors"
+                onClick={() => setMobileGithubOpen(!mobileGithubOpen)}
+              >
+                <div className="flex items-center gap-2">
+                  <Github className="h-4 w-4" />
+                  <span>{t("nav.github")}</span>
+                </div>
+                <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${mobileGithubOpen ? 'rotate-180' : ''}`} />
+              </button>
+              {mobileGithubOpen && (
+                <div className="pl-6 space-y-2">
+                  <a
+                    href="https://github.com/leonfagundes/IC-frontend"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{t("dropdown.frontend")}</span>
+                      <span className="text-xs text-muted-foreground">{t("dropdown.frontendDesc")}</span>
+                    </div>
+                  </a>
+                  <a
+                    href="https://github.com/leonfagundes/IC-backend"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-start gap-2 py-2 px-2 rounded-md hover:bg-accent transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    <ExternalLink className="h-3.5 w-3.5 mt-0.5 flex-shrink-0" />
+                    <div className="flex flex-col">
+                      <span className="text-sm font-medium">{t("dropdown.backend")}</span>
+                      <span className="text-xs text-muted-foreground">{t("dropdown.backendDesc")}</span>
+                    </div>
+                  </a>
+                </div>
+              )}
+            </div>
+
+            {/* Botões de tema e idioma no mobile */}
+            <div className="flex items-center gap-2 pt-4 border-t">
+              <LanguageToggle />
+              <ThemeToggle />
+            </div>
+          </div>
+        )}
       </div>
     </nav>
   );
