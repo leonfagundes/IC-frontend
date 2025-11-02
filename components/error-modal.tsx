@@ -22,7 +22,7 @@ export function ErrorModal({ open, onOpenChange }: ErrorModalProps) {
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md mx-4">
+      <DialogContent className="max-w-[calc(100%-2rem)] sm:max-w-md">
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             <div className="rounded-full bg-red-100 dark:bg-red-950 p-2">
