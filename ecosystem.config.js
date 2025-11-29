@@ -13,6 +13,7 @@ module.exports = {
       env: {
         NODE_ENV: 'production',
         PORT: 4001,
+        BACKEND_URL: 'http://localhost:8000/predict',
       },
       error_file: './logs/err.log',
       out_file: './logs/out.log',
