@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { Upload, X, Image as ImageIcon, ArrowRight, Loader2, Trash2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
-import { uploadImage } from "@/api/upload";
+import { uploadImage } from "@/lib/upload";
 import { ResultModal } from "./result-modal";
 import { ErrorModal } from "./error-modal";
 import { QRCodeUploadModal } from "./qrcode-upload-modal";
