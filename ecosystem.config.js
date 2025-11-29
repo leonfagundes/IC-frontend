@@ -6,6 +6,7 @@ module.exports = {
       args: 'start -p 4001',
       cwd: './',
       instances: 1,
+      exec_mode: 'fork',
       autorestart: true,
       watch: false,
       max_memory_restart: '1G',
