@@ -192,9 +192,9 @@ export function PhotoUpload() {
 
           {/* Botão de upload por celular */}
           <Button
-            variant="outline"
+            variant="default"
             onClick={handleOpenQRCode}
-            className="w-full flex items-center justify-center gap-2"
+            className="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
             <Smartphone className="h-4 w-4" />
             {t("home.uploadByCellphone")}

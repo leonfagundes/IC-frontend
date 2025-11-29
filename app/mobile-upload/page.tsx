@@ -170,10 +170,10 @@ function MobileUploadContent() {
             />
             <Button
               onClick={() => cameraInputRef.current?.click()}
-              className="w-full h-32 text-lg"
+              className="w-full h-16 text-base"
               size="lg"
             >
-              <Camera className="h-8 w-8 mr-3" />
+              <Camera className="h-5 w-5 mr-2" />
               Tirar Foto
             </Button>
 
@@ -198,10 +198,10 @@ function MobileUploadContent() {
             <Button
               onClick={() => fileInputRef.current?.click()}
               variant="outline"
-              className="w-full h-32 text-lg"
+              className="w-full h-16 text-base"
               size="lg"
             >
-              <Upload className="h-8 w-8 mr-3" />
+              <Upload className="h-5 w-5 mr-2" />
               Escolher da Galeria
             </Button>
           </div>

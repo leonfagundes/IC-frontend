@@ -27,9 +27,19 @@ export function QRCodeUploadModal({
 }: QRCodeUploadModalProps) {
   const { t } = useI18n();
   const [isWaiting, setIsWaiting] = useState(false);
+  const [qrSize, setQrSize] = useState(200);
   const uploadUrl = typeof window !== "undefined" 
     ? `${window.location.origin}/mobile-upload?session=${sessionId}`
     : "";
+
+  useEffect(() => {
+    const updateSize = () => {
+      setQrSize(window.innerWidth < 640 ? 160 : 200);
+    };
+    updateSize();
+    window.addEventListener('resize', updateSize);
+    return () => window.removeEventListener('resize', updateSize);
+  }, []);
 
   useEffect(() => {
     if (!open) {
@@ -69,35 +79,35 @@ export function QRCodeUploadModal({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="flex flex-col items-center space-y-6 py-4">
+        <div className="flex flex-col items-center space-y-3 sm:space-y-4 py-2">
           {/* QR Code */}
-          <div className="bg-white p-4 rounded-lg shadow-lg">
+          <div className="bg-white p-2 sm:p-3 rounded-lg shadow-lg">
             <QRCodeSVG
               value={uploadUrl}
-              size={200}
+              size={qrSize}
               level="H"
               includeMargin={true}
             />
           </div>
 
           {/* Instruções */}
-          <div className="w-full space-y-2 bg-muted p-4 rounded-lg">
-            <h4 className="font-semibold text-sm">
+          <div className="w-full space-y-1.5 bg-muted p-2.5 sm:p-3 rounded-lg">
+            <h4 className="font-semibold text-xs">
               Como usar:
             </h4>
-            <ol className="text-xs sm:text-sm space-y-1 list-decimal list-inside text-muted-foreground">
+            <ol className="text-[10px] sm:text-xs space-y-0.5 list-decimal list-inside text-muted-foreground leading-tight">
               <li>Abra a câmera do seu celular</li>
               <li>Aponte para o QR Code</li>
               <li>Toque na notificação para abrir o link</li>
               <li>Escolha ou tire uma foto</li>
-              <li>A imagem aparecerá aqui automaticamente</li>
+              <li>A imagem aparecerá aqui</li>
             </ol>
           </div>
 
           {/* Status de aguardando */}
           {isWaiting && (
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="flex items-center gap-2 text-xs text-muted-foreground">
+              <Loader2 className="h-3 w-3 animate-spin" />
               <span>{t("home.waitingForImage")}</span>
             </div>
           )}
