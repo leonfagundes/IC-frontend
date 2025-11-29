@@ -5,7 +5,7 @@ const SIMULATE_DELAY = false;
 const DELAY_TIME = 100000; 
 
 const apiClient = axios.create({
-  baseURL: '/api',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://72.61.33.18:8000/',
   timeout: REQUEST_TIMEOUT,
   headers: {
     'Content-Type': 'multipart/form-data',
@@ -20,6 +20,6 @@ export async function uploadImage(file: File) {
     await new Promise(resolve => setTimeout(resolve, DELAY_TIME));
   }
 
-  const { data } = await apiClient.post('/proxy-predict', formData);
+  const { data } = await apiClient.post('/predict', formData);
   return data;
 }
