@@ -7,3 +7,4 @@ export { PhotoUpload } from "./photo-upload";
 export { HelpButton } from "./help-button";
 export { ResultModal } from "./result-modal";
 export { ErrorModal } from "./error-modal";
+export { QRCodeUploadModal } from "./qrcode-upload-modal";

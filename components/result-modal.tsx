@@ -191,7 +191,7 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
                   <div className="flex-1 space-y-2 sm:space-y-3 w-full sm:w-auto">
                     <h3 className="text-xl sm:text-2xl font-bold text-primary text-center sm:text-left">{info.name}</h3>
                     
-                    {/* Acurácia Global do Modelo */}
+                    {/* Precisão Global do Modelo */}
                     <div className="space-y-1">
                       <p className="text-xs sm:text-sm text-muted-foreground">
                         {t("result.globalAccuracy")}
@@ -200,11 +200,11 @@ export function ResultModal({ open, onOpenChange, isLoading, prediction, uploade
                         <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
                           <div 
                             className="h-full bg-green-500 transition-all duration-500"
-                            style={{ width: '90.6%' }}
+                            style={{ width: '93.16%' }}
                           />
                         </div>
                         <span className="text-xs sm:text-sm font-semibold text-green-600 dark:text-green-400 whitespace-nowrap">
-                          90,6%
+                          93,16%
                         </span>
                       </div>
                     </div>
