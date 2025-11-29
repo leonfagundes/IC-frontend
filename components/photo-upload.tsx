@@ -1,12 +1,13 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Upload, X, Image as ImageIcon, ArrowRight, Loader2, Trash2 } from "lucide-react";
+import { Upload, X, Image as ImageIcon, ArrowRight, Loader2, Trash2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { uploadImage } from "@/api/upload";
 import { ResultModal } from "./result-modal";
 import { ErrorModal } from "./error-modal";
+import { QRCodeUploadModal } from "./qrcode-upload-modal";
 import { useI18n } from "./i18n-provider";
 
 export function PhotoUpload() {
@@ -18,6 +19,8 @@ export function PhotoUpload() {
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
+  const [showQRCodeModal, setShowQRCodeModal] = useState(false);
+  const [sessionId, setSessionId] = useState<string>("");
   const [prediction, setPrediction] = useState<{ class: string; confidence?: number; uploadedImage?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -122,6 +125,29 @@ export function PhotoUpload() {
     }
   };
 
+  const handleOpenQRCode = () => {
+    // Gerar ID de sessão único
+    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+    setSessionId(newSessionId);
+    setShowQRCodeModal(true);
+  };
+
+  const handleImageFromMobile = (imageData: string) => {
+    setPreview(imageData);
+    // Converter base64 para File
+    fetch(imageData)
+      .then(res => res.blob())
+      .then(blob => {
+        const file = new File([blob], "mobile-upload.jpg", { type: "image/jpeg" });
+        setCurrentFile(file);
+        setUploadError(null);
+      })
+      .catch(err => {
+        console.error("Erro ao processar imagem do celular:", err);
+        setUploadError("Erro ao processar imagem do celular");
+      });
+  };
+
   return (
     <div className="w-full space-y-4">
       <input
@@ -133,34 +159,46 @@ export function PhotoUpload() {
       />
 
       {!preview ? (
-        <div
-          onClick={handleClick}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          className={`
-            relative border-2 border-dashed rounded-lg p-8 sm:p-12 text-center cursor-pointer
-            transition-colors duration-200
-            ${
-              isDragging
-                ? "border-primary bg-primary/5"
-                : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/50"
-            }
-          `}
-        >
-          <div className="flex flex-col items-center gap-3 sm:gap-4">
-            <div className="rounded-full bg-primary/10 p-3 sm:p-4">
-              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-            </div>
-            <div className="space-y-1 sm:space-y-2">
-              <p className="text-base sm:text-lg font-medium">
-                {t("home.uploadArea")}
-              </p>
-              <p className="text-xs sm:text-sm text-muted-foreground">
-                {t("home.uploadFormats")}
-              </p>
+        <div className="space-y-4">
+          <div
+            onClick={handleClick}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            className={`
+              relative border-2 border-dashed rounded-lg p-8 sm:p-12 text-center cursor-pointer
+              transition-colors duration-200
+              ${
+                isDragging
+                  ? "border-primary bg-primary/5"
+                  : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/50"
+              }
+            `}
+          >
+            <div className="flex flex-col items-center gap-3 sm:gap-4">
+              <div className="rounded-full bg-primary/10 p-3 sm:p-4">
+                <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+              </div>
+              <div className="space-y-1 sm:space-y-2">
+                <p className="text-base sm:text-lg font-medium">
+                  {t("home.uploadArea")}
+                </p>
+                <p className="text-xs sm:text-sm text-muted-foreground">
+                  {t("home.uploadFormats")}
+                </p>
+              </div>
             </div>
           </div>
+
+          {/* Botão de upload por celular */}
+          <Button
+            variant="default"
+            onClick={handleOpenQRCode}
+            className="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+          >
+            <Smartphone className="h-4 w-4" />
+            {t("home.uploadByCellphone")}
+          </Button>
         </div>
       ) : (
         <div className="relative">
@@ -251,6 +289,14 @@ export function PhotoUpload() {
       <ErrorModal
         open={showErrorModal}
         onOpenChange={setShowErrorModal}
+      />
+
+      {/* Modal de QR Code */}
+      <QRCodeUploadModal
+        open={showQRCodeModal}
+        onOpenChange={setShowQRCodeModal}
+        onImageReceived={handleImageFromMobile}
+        sessionId={sessionId}
       />
     </div>
   );

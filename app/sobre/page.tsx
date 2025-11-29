@@ -150,6 +150,10 @@ export default function SobrePage() {
                 <span className="text-primary mt-1">✓</span>
                 <p className="text-muted-foreground">{t("about.gliomaDetection")}</p>
               </li>
+              <li className="flex items-start gap-2">
+                <span className="text-primary mt-1">✓</span>
+                <p className="text-muted-foreground">{t("about.meningiomaDetection")}</p>
+              </li>
             </ul>
             <div className="mt-4 p-4 bg-muted rounded-lg">
               <p className="text-sm text-muted-foreground italic">
