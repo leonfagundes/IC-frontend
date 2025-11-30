@@ -190,11 +190,11 @@ export function PhotoUpload() {
             </div>
           </div>
 
-          {/* Botão de upload por celular */}
+          {/* Botão de upload por celular - oculto em mobile */}
           <Button
             variant="default"
             onClick={handleOpenQRCode}
-            className="w-full flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
+            className="w-full hidden sm:flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
           >
             <Smartphone className="h-4 w-4" />
             {t("home.uploadByCellphone")}

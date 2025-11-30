@@ -50,6 +50,10 @@ function MobileUploadContent() {
 
         if (response.ok) {
           setIsUploaded(true);
+          // Resetar após 2 segundos para permitir novo envio
+          setTimeout(() => {
+            setIsUploaded(false);
+          }, 2000);
         } else {
           setError("Erro ao enviar imagem. Tente novamente.");
         }
@@ -109,6 +113,7 @@ function MobileUploadContent() {
                 alt="Imagem enviada"
                 fill
                 className="object-contain"
+                style={{ transform: 'scaleX(-1)' }}
               />
             </div>
           )}
@@ -144,6 +149,7 @@ function MobileUploadContent() {
                 alt="Preview"
                 fill
                 className="object-contain"
+                style={{ transform: 'scaleX(-1)' }}
               />
               <Button
                 variant="destructive"
