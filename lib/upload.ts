@@ -12,8 +12,6 @@ const apiClient = axios.create({
   },
 });
 
-console.log('API URL:', process.env.NEXT_PUBLIC_API_URL);
-
 export async function uploadImage(file: File) {
   const formData = new FormData();
   formData.append('file', file);

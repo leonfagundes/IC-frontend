@@ -1,0 +1,259 @@
+// ============================================
+// REGRAS DE SEGURANÇA DO FIRESTORE
+// ============================================
+// Cole este código em: Firebase Console > Firestore Database > Regras
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ============================================
+    // OPÇÃO 1: Desenvolvimento (Permissiva)
+    // ============================================
+    // Use apenas durante desenvolvimento!
+    // ATENÇÃO: Qualquer um pode ler/escrever
+    
+    match /sessions/{sessionId} {
+      allow read, write: if true;
+    }
+    
+    match /images/{imageId} {
+      allow read, write: if true;
+    }
+    
+    
+    // ============================================
+    // OPÇÃO 2: Produção Básica (Recomendada)
+    // ============================================
+    // Regras básicas de segurança para produção
+    
+    match /sessions/{sessionId} {
+      // Qualquer um pode criar sessões
+      allow create: if true;
+      
+      // Apenas leitura de sessões não expiradas/fechadas
+      allow read: if resource.data.status in ['pending', 'active'];
+      
+      // Apenas atualizar própria sessão (por ID)
+      allow update: if request.resource.data.status in ['pending', 'active', 'closed', 'expired']
+                    && resource.data.status in ['pending', 'active'];
+      
+      // Não permitir delete direto
+      allow delete: if false;
+    }
+    
+    match /images/{imageId} {
+      // Qualquer um pode criar imagens
+      allow create: if true;
+      
+      // Apenas leitura de imagens
+      allow read: if true;
+      
+      // Não permitir update/delete
+      allow update, delete: if false;
+    }
+    
+    
+    // ============================================
+    // OPÇÃO 3: Produção Avançada (Mais Segura)
+    // ============================================
+    // Com validações e rate limiting
+    
+    match /sessions/{sessionId} {
+      // Funções auxiliares
+      function isValidStatus() {
+        return request.resource.data.status in ['pending', 'active', 'closed', 'expired'];
+      }
+      
+      function isNotExpired() {
+        return request.time < resource.data.expiresAt;
+      }
+      
+      function hasRequiredFields() {
+        return request.resource.data.keys().hasAll([
+          'status', 
+          'createdAt', 
+          'expiresAt', 
+          'desktopConnected', 
+          'mobileConnected', 
+          'lastUpdateAt'
+        ]);
+      }
+      
+      function expiresInFiveMinutes() {
+        return request.resource.data.expiresAt == request.resource.data.createdAt + duration.value(5, 'm');
+      }
+      
+      // Criar sessão
+      allow create: if hasRequiredFields()
+                    && request.resource.data.status == 'pending'
+                    && expiresInFiveMinutes();
+      
+      // Ler sessão (apenas se não expirada)
+      allow read: if isNotExpired()
+                  && resource.data.status in ['pending', 'active'];
+      
+      // Atualizar sessão
+      allow update: if isNotExpired()
+                    && isValidStatus()
+                    && hasRequiredFields()
+                    // Não pode alterar timestamps de criação
+                    && request.resource.data.createdAt == resource.data.createdAt
+                    && request.resource.data.expiresAt == resource.data.expiresAt;
+      
+      // Não permitir delete
+      allow delete: if false;
+    }
+    
+    
+    // ============================================
+    // OPÇÃO 4: Com Autenticação (Mais Seguro)
+    // ============================================
+    // Requer Firebase Authentication configurado
+    
+    match /sessions/{sessionId} {
+      // Apenas usuários autenticados
+      allow read, write: if request.auth != null
+                         && request.time < resource.data.expiresAt;
+      
+      // Usuário só pode modificar suas próprias sessões
+      allow update: if request.auth.uid == resource.data.userId;
+    }
+    
+    
+    // ============================================
+    // Regras para outras coleções (futuro)
+    // ============================================
+    
+    // Imagens enviadas (se implementar)
+    match /uploads/{uploadId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+    
+    // Resultados da IA (se implementar)
+    match /results/{resultId} {
+      allow read: if true;
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+  }
+}
+
+
+// ============================================
+// EXPLICAÇÃO DAS REGRAS
+// ============================================
+
+/*
+1. OPÇÃO 1 - Desenvolvimento:
+   - Permite tudo
+   - Use APENAS para desenvolvimento local
+   - Nunca em produção!
+
+2. OPÇÃO 2 - Produção Básica (RECOMENDADA):
+   - Qualquer um pode criar sessões
+   - Apenas sessões ativas podem ser lidas
+   - Apenas sessões ativas podem ser atualizadas
+   - Não permite exclusão direta
+   - Boa para começar
+
+3. OPÇÃO 3 - Produção Avançada:
+   - Valida campos obrigatórios
+   - Verifica expiração de 5 minutos
+   - Não permite alterar timestamps
+   - Protege contra manipulação
+   - Recomendada para produção
+
+4. OPÇÃO 4 - Com Autenticação:
+   - Requer usuário logado
+   - Cada usuário só edita suas sessões
+   - Mais seguro, mas requer auth
+   - Use se tiver login
+
+COMO ESCOLHER:
+- Desenvolvimento local: Opção 1
+- MVP/Testes: Opção 2
+- Produção: Opção 3
+- Com login de usuários: Opção 4
+*/
+
+
+// ============================================
+// COMO APLICAR AS REGRAS
+// ============================================
+
+/*
+1. Acesse: https://console.firebase.google.com/
+2. Selecione seu projeto
+3. Menu lateral > Firestore Database
+4. Aba "Regras" no topo
+5. Cole uma das opções acima
+6. Clique em "Publicar"
+7. Aguarde ~1 minuto para propagar
+
+ATENÇÃO:
+- Sempre teste as regras antes de publicar!
+- Use o Simulador de Regras no Firebase Console
+- Começe com regras permissivas e vá restringindo
+- Monitore logs de segurança em "Regras" > "Solicitações"
+*/
+
+
+// ============================================
+// EXEMPLOS DE TESTE (Simulador de Regras)
+// ============================================
+
+/*
+TESTE 1: Criar Sessão
+Tipo: create
+Caminho: /sessions/abc123
+Dados:
+{
+  "status": "pending",
+  "createdAt": {"__time__": "2024-01-01T10:00:00Z"},
+  "expiresAt": {"__time__": "2024-01-01T10:05:00Z"},
+  "desktopConnected": true,
+  "mobileConnected": false,
+  "lastUpdateAt": {"__time__": "2024-01-01T10:00:00Z"}
+}
+Resultado esperado: ✅ Permitido
+
+
+TESTE 2: Ler Sessão Ativa
+Tipo: get
+Caminho: /sessions/abc123
+Resultado esperado: ✅ Permitido
+
+
+TESTE 3: Atualizar Sessão
+Tipo: update
+Caminho: /sessions/abc123
+Dados: {"status": "active"}
+Resultado esperado: ✅ Permitido
+
+
+TESTE 4: Deletar Sessão
+Tipo: delete
+Caminho: /sessions/abc123
+Resultado esperado: ❌ Negado
+*/
+
+
+// ============================================
+// MONITORAMENTO
+// ============================================
+
+/*
+Para ver tentativas bloqueadas:
+1. Firebase Console > Firestore Database
+2. Aba "Regras"
+3. Seção "Solicitações recentes"
+4. Veja quais operações foram negadas
+
+Se muitas operações legítimas estão sendo bloqueadas:
+- Revise suas regras
+- Use regras mais permissivas temporariamente
+- Adicione logs no código para debug
+*/

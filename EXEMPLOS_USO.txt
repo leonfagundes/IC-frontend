@@ -1,0 +1,400 @@
+/**
+ * ============================================
+ * ARQUIVO DE EXEMPLOS - NÃO EXECUTÁVEL
+ * ============================================
+ * Este arquivo contém exemplos de código para referência.
+ * Copie e cole os trechos relevantes em seus componentes.
+ * Os erros de TypeScript aqui são normais pois este arquivo
+ * não importa todas as dependências necessárias.
+ */
+
+// Exemplos de uso dos componentes e hooks criados
+
+// ============================================
+// 1. Hook useSession
+// ============================================
+
+import { useSession } from '@/lib/hooks/useSession';
+
+function ExemploDesktop() {
+  const { session, createSession, closeSession } = useSession();
+  
+  const handleCriarSessao = async () => {
+    const sessionId = await createSession();
+    console.log('Sessão criada:', sessionId);
+  };
+  
+  const handleEncerrar = async () => {
+    if (session?.id) {
+      await closeSession(session.id);
+    }
+  };
+  
+  return (
+    <div>
+      <button onClick={handleCriarSessao}>Criar Sessão</button>
+      {session && (
+        <div>
+          <p>Status: {session.status}</p>
+          <p>Mobile conectado: {session.mobileConnected ? 'Sim' : 'Não'}</p>
+          <button onClick={handleEncerrar}>Encerrar</button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function ExemploMobile() {
+  const sessionId = 'abc123'; // Do parâmetro da URL
+  const { session, connectMobile } = useSession(sessionId);
+  
+  useEffect(() => {
+    connectMobile(sessionId);
+  }, []);
+  
+  return (
+    <div>
+      {session?.status === 'active' && (
+        <p>Conectado! Pode enviar imagens.</p>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// 2. Componente QRCodeModal
+// ============================================
+
+import { QRCodeModal } from '@/components/qrcode-modal';
+
+function ExemploQRCode() {
+  const [showModal, setShowModal] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+  
+  const handleAbrir = async () => {
+    const id = await createSession();
+    setSessionId(id);
+    setShowModal(true);
+  };
+  
+  return (
+    <>
+      <button onClick={handleAbrir}>Mostrar QR Code</button>
+      
+      <QRCodeModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        sessionId={sessionId}
+        expiresAt={new Date(Date.now() + 5 * 60 * 1000)}
+      />
+    </>
+  );
+}
+
+// ============================================
+// 3. Componente SessionCard
+// ============================================
+
+import { SessionCard } from '@/components/session-card';
+
+function ExemploSessionCard() {
+  const { session, closeSession } = useSession('session123');
+  
+  if (!session) return null;
+  
+  return (
+    <SessionCard
+      session={session}
+      onClose={() => closeSession(session.id!)}
+    />
+  );
+}
+
+// ============================================
+// 4. Serviço de IA
+// ============================================
+
+import { uploadToAI } from '@/lib/services/ai-service';
+
+async function exemploUpload(file: File) {
+  try {
+    const result = await uploadToAI(file);
+    
+    console.log('Classe:', result.predicted_class);
+    console.log('Confiança:', result.confidence);
+    console.log('Tempo:', result.processing_time, 'ms');
+    
+    // Resultados possíveis:
+    // - glioma (confiança: 0.81)
+    // - meningioma (confiança: 0.88)
+    // - notumor (confiança: 0.97)
+    // - pituitary (confiança: 0.96)
+    
+  } catch (error) {
+    console.error('Erro ao processar:', error);
+  }
+}
+
+// ============================================
+// 5. Integração Completa (Desktop)
+// ============================================
+
+function ComponenteDesktopCompleto() {
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
+  const { session, createSession, closeSession } = useSession(sessionId || undefined);
+  
+  const handleAbrirSessaoMobile = async () => {
+    try {
+      const id = await createSession();
+      setSessionId(id);
+      setShowQRModal(true);
+    } catch (err) {
+      console.error('Erro ao criar sessão:', err);
+    }
+  };
+  
+  const handleEncerrarSessao = async () => {
+    if (sessionId) {
+      await closeSession(sessionId);
+      setSessionId(null);
+    }
+  };
+  
+  return (
+    <div>
+      {/* Botão para abrir sessão mobile */}
+      <button onClick={handleAbrirSessaoMobile}>
+        Enviar pelo Celular
+      </button>
+      
+      {/* Modal com QR Code */}
+      {sessionId && (
+        <QRCodeModal
+          isOpen={showQRModal}
+          onClose={() => setShowQRModal(false)}
+          sessionId={sessionId}
+          expiresAt={session?.expiresAt ? new Date(session.expiresAt.toMillis()) : undefined}
+        />
+      )}
+      
+      {/* Card de status (se mobile conectado) */}
+      {session && (session.status === 'pending' || session.status === 'active') && (
+        <SessionCard
+          session={session}
+          onClose={handleEncerrarSessao}
+        />
+      )}
+      
+      {/* Indicador de status */}
+      {session && (
+        <div>
+          <p>Status: {session.status}</p>
+          <p>Mobile: {session.mobileConnected ? '✓ Conectado' : '⏳ Aguardando'}</p>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ============================================
+// 6. Integração Completa (Mobile)
+// ============================================
+
+function ComponenteMobileCompleto() {
+  const params = useParams();
+  const sessionId = params?.sessionId as string;
+  const router = useRouter();
+  
+  const { session, loading, error, connectMobile, closeSession } = useSession(sessionId);
+  const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
+  const [uploading, setUploading] = useState(false);
+  
+  // Conectar ao mobile quando carregar
+  useEffect(() => {
+    if (sessionId && !session) {
+      connectMobile(sessionId).catch(console.error);
+    }
+  }, [sessionId, session, connectMobile]);
+  
+  // Monitorar se sessão foi fechada
+  useEffect(() => {
+    if (session?.status === 'closed' || session?.status === 'expired') {
+      alert('Sessão encerrada');
+      router.push('/');
+    }
+  }, [session?.status]);
+  
+  // Upload de arquivo
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || session?.status !== 'active') return;
+    
+    setUploading(true);
+    try {
+      const files = Array.from(e.target.files);
+      
+      for (const file of files) {
+        await uploadToAI(file);
+        setUploadedFiles(prev => [...prev, file.name]);
+      }
+    } catch (err) {
+      console.error('Erro:', err);
+    } finally {
+      setUploading(false);
+    }
+  };
+  
+  // Encerrar sessão
+  const handleEncerrar = async () => {
+    if (sessionId) {
+      await closeSession(sessionId);
+      router.push('/');
+    }
+  };
+  
+  if (loading) return <p>Conectando...</p>;
+  if (error) return <p>Erro: {error}</p>;
+  if (!session) return <p>Sessão não encontrada</p>;
+  
+  return (
+    <div>
+      <h1>Upload Mobile</h1>
+      
+      {/* Status */}
+      <p>Status: {session.status}</p>
+      
+      {/* Upload */}
+      {session.status === 'active' && (
+        <input
+          type="file"
+          accept="image/*"
+          multiple
+          onChange={handleUpload}
+          disabled={uploading}
+        />
+      )}
+      
+      {/* Arquivos enviados */}
+      {uploadedFiles.length > 0 && (
+        <ul>
+          {uploadedFiles.map((name, i) => (
+            <li key={i}>{name}</li>
+          ))}
+        </ul>
+      )}
+      
+      {/* Encerrar */}
+      <button onClick={handleEncerrar}>
+        Encerrar Sessão
+      </button>
+    </div>
+  );
+}
+
+// ============================================
+// 7. Consultas Firestore Diretas (Avançado)
+// ============================================
+
+import { doc, getDoc, updateDoc, onSnapshot } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
+
+// Ler sessão (uma vez)
+async function lerSessao(sessionId: string) {
+  const docRef = doc(db, 'sessions', sessionId);
+  const docSnap = await getDoc(docRef);
+  
+  if (docSnap.exists()) {
+    return docSnap.data();
+  } else {
+    throw new Error('Sessão não encontrada');
+  }
+}
+
+// Atualizar status
+async function atualizarStatus(sessionId: string, status: string) {
+  const docRef = doc(db, 'sessions', sessionId);
+  await updateDoc(docRef, {
+    status,
+    lastUpdateAt: new Date()
+  });
+}
+
+// Escutar mudanças em tempo real
+function escutarSessao(sessionId: string, callback: (data: any) => void) {
+  const docRef = doc(db, 'sessions', sessionId);
+  
+  const unsubscribe = onSnapshot(docRef, (snapshot) => {
+    if (snapshot.exists()) {
+      callback(snapshot.data());
+    }
+  });
+  
+  // Retorna função para parar de escutar
+  return unsubscribe;
+}
+
+// Exemplo de uso
+const unsubscribe = escutarSessao('session123', (data) => {
+  console.log('Sessão atualizada:', data);
+});
+
+// Parar de escutar quando componente desmontar
+// unsubscribe();
+
+// ============================================
+// 8. Tipos TypeScript
+// ============================================
+
+import { Session, SessionStatus } from '@/lib/types/session';
+
+// Exemplo de tipagem forte
+function processarSessao(session: Session) {
+  // TypeScript sabe todos os campos
+  const id = session.id;
+  const status: SessionStatus = session.status;
+  const criada = session.createdAt.toDate();
+  const expira = session.expiresAt.toDate();
+  
+  console.log(`Sessão ${id} ${status}`);
+  console.log(`Criada: ${criada}`);
+  console.log(`Expira: ${expira}`);
+}
+
+// ============================================
+// 9. Customizações
+// ============================================
+
+// Alterar tempo de expiração
+// Em lib/hooks/useSession.ts:
+// const SESSION_DURATION_MS = 10 * 60 * 1000; // 10 minutos
+
+// Adicionar campos customizados à sessão
+interface SessionCustomizada extends Session {
+  userName?: string;
+  deviceType?: 'ios' | 'android';
+  totalUploads?: number;
+}
+
+// ============================================
+// 10. Integração com API Real
+// ============================================
+
+// Substituir em lib/services/ai-service.ts:
+export async function uploadToAI(file: File): Promise<AIResult> {
+  const formData = new FormData();
+  formData.append('image', file);
+  
+  const response = await fetch('https://sua-api.com/predict', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${process.env.NEXT_PUBLIC_API_KEY}`
+    },
+    body: formData
+  });
+  
+  if (!response.ok) {
+    throw new Error('Erro na API');
+  }
+  
+  return response.json();
+}

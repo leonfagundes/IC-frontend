@@ -5,8 +5,7 @@ import { NavbarWrapper } from "@/components/navbar-wrapper";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { I18nProvider } from "@/components/i18n-provider";
-import { MobileConnectionProvider } from "@/components/mobile-connection-provider";
-import { MobileLinkStatus } from "@/components/mobile-link-status";
+import { SessionManager } from "@/components/session-manager";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -45,14 +44,13 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
-            <MobileConnectionProvider>
+            <SessionManager>
               <NavbarWrapper />
-              <MobileLinkStatus />
               <main className="flex-1">
                 {children}
               </main>
               <Footer />
-            </MobileConnectionProvider>
+            </SessionManager>
           </I18nProvider>
         </ThemeProvider>
       </body>

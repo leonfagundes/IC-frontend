@@ -1,21 +1,20 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Upload, X, Image as ImageIcon, ArrowRight, Loader2, Trash2, Smartphone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { uploadImage } from "@/lib/upload";
 import { ResultModal } from "./result-modal";
 import { ErrorModal } from "./error-modal";
-import { QRCodeUploadModal } from "./qrcode-upload-modal";
 import { useI18n } from "./i18n-provider";
-import { useMobileConnection } from "./mobile-connection-provider";
-import { useSessionId } from "@/hooks/use-session-id";
+import { QRCodeModal } from "./qrcode-modal";
+import { useSession } from "@/lib/hooks/useSession";
+import { collection, query, where, onSnapshot, orderBy, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 export function PhotoUpload() {
   const { t } = useI18n();
-  const { sessionId: desktopSessionId, isLoading: sessionLoading } = useSessionId();
-  const { setSessionId: setContextSessionId } = useMobileConnection();
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -23,9 +22,76 @@ export function PhotoUpload() {
   const [currentFile, setCurrentFile] = useState<File | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showQRCodeModal, setShowQRCodeModal] = useState(false);
   const [prediction, setPrediction] = useState<{ class: string; confidence?: number; uploadedImage?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isMobile, setIsMobile] = useState(false);
+  
+  // Estados para sessão mobile
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
+  const { session, createSession } = useSession(currentSessionId || undefined);
+
+  // Detectar se é mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  // Fechar modal quando celular conectar
+  useEffect(() => {
+    if (session?.status === 'active' && showQRModal) {
+      setShowQRModal(false);
+    }
+  }, [session?.status, showQRModal]);
+
+  // Sincronizar imagens enviadas pelo celular
+  useEffect(() => {
+    if (!currentSessionId) return;
+
+    const imagesRef = collection(db, 'images');
+    const q = query(
+      imagesRef,
+      where('sessionId', '==', currentSessionId),
+      orderBy('uploadedAt', 'desc')
+    );
+
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === 'added') {
+          const imageData = change.doc.data();
+          // Substituir imagem atual pela do celular
+          if (imageData.dataUrl) {
+            setPreview(imageData.dataUrl);
+            setCurrentFile(null); // Arquivo veio do celular, não temos File object
+            setUploadError(null);
+          }
+        }
+      });
+    });
+
+    return () => unsubscribe();
+  }, [currentSessionId]);
+
+  // Handler para abrir sessão mobile
+  const handleMobileUpload = async () => {
+    try {
+      const sessionId = await createSession();
+      setCurrentSessionId(sessionId);
+      setShowQRModal(true);
+      
+      // Registrar sessão globalmente para o SessionCard
+      if (typeof window !== 'undefined') {
+        (window as any).__setActiveSession?.(sessionId);
+      }
+    } catch (err) {
+      console.error('Erro ao criar sessão:', err);
+      setUploadError('Erro ao criar sessão mobile');
+    }
+  };
 
   const handleFileChange = (file: File | null) => {
     if (file && file.type.startsWith("image/")) {
@@ -75,7 +141,7 @@ export function PhotoUpload() {
   };
 
   const handleSubmit = async () => {
-    if (!currentFile) {
+    if (!preview) {
       setUploadError("Nenhuma imagem selecionada");
       return;
     }
@@ -87,7 +153,19 @@ export function PhotoUpload() {
     setPrediction(null);
 
     try {
-      const response = await uploadImage(currentFile);
+      // Se não há currentFile, converter preview (base64) para File
+      let fileToUpload = currentFile;
+      if (!fileToUpload && preview) {
+        const response = await fetch(preview);
+        const blob = await response.blob();
+        fileToUpload = new File([blob], 'imagem-celular.jpg', { type: 'image/jpeg' });
+      }
+
+      if (!fileToUpload) {
+        throw new Error('Erro ao processar imagem');
+      }
+
+      const response = await uploadImage(fileToUpload);
       console.log("Resposta da API:", response);
       
       const predictedClass = response.predicted_class || response.class || response.prediction;
@@ -128,35 +206,6 @@ export function PhotoUpload() {
     }
   };
 
-  const handleOpenQRCode = () => {
-    if (!desktopSessionId) return;
-    setContextSessionId(desktopSessionId);
-    setShowQRCodeModal(true);
-  };
-
-  const handleImageFromMobile = (imageData: string) => {
-    // Limpar preview e arquivo anterior completamente
-    setPreview(null);
-    setCurrentFile(null);
-    
-    // Pequeno delay para garantir que o estado foi limpo
-    setTimeout(() => {
-      setPreview(imageData);
-      // Converter base64 para File
-      fetch(imageData)
-        .then(res => res.blob())
-        .then(blob => {
-          const file = new File([blob], "mobile-upload.jpg", { type: "image/jpeg" });
-          setCurrentFile(file);
-          setUploadError(null);
-        })
-        .catch(err => {
-          console.error("Erro ao processar imagem do celular:", err);
-          setUploadError("Erro ao processar imagem do celular");
-        });
-    }, 100);
-  };
-
   return (
     <div className="w-full space-y-4">
       <input
@@ -168,46 +217,34 @@ export function PhotoUpload() {
       />
 
       {!preview ? (
-        <div className="space-y-4">
-          <div
-            onClick={handleClick}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
-            className={`
-              relative border-2 border-dashed rounded-lg p-8 sm:p-12 text-center cursor-pointer
-              transition-colors duration-200
-              ${
-                isDragging
-                  ? "border-primary bg-primary/5"
-                  : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/50"
-              }
-            `}
-          >
-            <div className="flex flex-col items-center gap-3 sm:gap-4">
-              <div className="rounded-full bg-primary/10 p-3 sm:p-4">
-                <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              </div>
-              <div className="space-y-1 sm:space-y-2">
-                <p className="text-base sm:text-lg font-medium">
-                  {t("home.uploadArea")}
-                </p>
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  {t("home.uploadFormats")}
-                </p>
-              </div>
+        <div
+          onClick={handleClick}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          className={`
+            relative border-2 border-dashed rounded-lg p-8 sm:p-12 text-center cursor-pointer
+            transition-colors duration-200
+            ${
+              isDragging
+                ? "border-primary bg-primary/5"
+                : "border-muted-foreground/25 hover:border-primary/50 hover:bg-accent/50"
+            }
+          `}
+        >
+          <div className="flex flex-col items-center gap-3 sm:gap-4">
+            <div className="rounded-full bg-primary/10 p-3 sm:p-4">
+              <Upload className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
+            </div>
+            <div className="space-y-1 sm:space-y-2">
+              <p className="text-base sm:text-lg font-medium">
+                {t("home.uploadArea")}
+              </p>
+              <p className="text-xs sm:text-sm text-muted-foreground">
+                {t("home.uploadFormats")}
+              </p>
             </div>
           </div>
-
-          {/* Botão de upload por celular - oculto em mobile */}
-          <Button
-            variant="default"
-            onClick={handleOpenQRCode}
-            className="w-full hidden sm:flex items-center justify-center gap-2 bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200"
-          >
-            <Smartphone className="h-4 w-4" />
-            {t("home.uploadByCellphone")}
-          </Button>
         </div>
       ) : (
         <div className="relative">
@@ -226,6 +263,20 @@ export function PhotoUpload() {
             onClick={handleRemove}
           >
             <X className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
+      {/* Botão Enviar pelo Celular */}
+      {!preview && session?.status !== 'active' && !isMobile && (
+        <div className="flex justify-start">
+          <Button
+            variant="outline"
+            onClick={handleMobileUpload}
+            className="flex items-center gap-2 rounded-lg"
+          >
+            <Smartphone className="h-4 w-4" />
+            Carregar Imagem do Celular
           </Button>
         </div>
       )}
@@ -300,13 +351,15 @@ export function PhotoUpload() {
         onOpenChange={setShowErrorModal}
       />
 
-      {/* Modal de QR Code */}
-      <QRCodeUploadModal
-        open={showQRCodeModal}
-        onOpenChange={setShowQRCodeModal}
-        onImageReceived={handleImageFromMobile}
-        desktopSessionId={desktopSessionId || ""}
-      />
+      {/* Modal QR Code */}
+      {currentSessionId && (
+        <QRCodeModal
+          isOpen={showQRModal}
+          onClose={() => setShowQRModal(false)}
+          sessionId={currentSessionId}
+          expiresAt={session?.expiresAt ? new Date(session.expiresAt.toMillis()) : undefined}
+        />
+      )}
     </div>
   );
 }
