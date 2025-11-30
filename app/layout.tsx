@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/navbar";
+import { NavbarWrapper } from "@/components/navbar-wrapper";
 import { Footer } from "@/components/footer";
 import { ThemeProvider } from "@/components/theme-provider";
 import { I18nProvider } from "@/components/i18n-provider";
+import { MobileConnectionProvider } from "@/components/mobile-connection-provider";
+import { MobileLinkStatus } from "@/components/mobile-link-status";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -43,11 +45,14 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <I18nProvider>
-            <Navbar />
-            <main className="flex-1">
-              {children}
-            </main>
-            <Footer />
+            <MobileConnectionProvider>
+              <NavbarWrapper />
+              <MobileLinkStatus />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </MobileConnectionProvider>
           </I18nProvider>
         </ThemeProvider>
       </body>

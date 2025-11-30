@@ -1,44 +1,114 @@
 "use client";
 
 import { useState, useRef, useEffect, Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { Camera, Upload, CheckCircle2, X } from "lucide-react";
+import { Camera, Upload, CheckCircle2, X, AlertCircle } from "lucide-react";
 import Image from "next/image";
+import { v4 as uuidv4 } from "uuid";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const MOBILE_SESSION_KEY = "mobile-session-id";
 
 function MobileUploadContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  const sessionId = searchParams.get("session");
+  const desktopSessionId = searchParams.get("desktopSessionId");
+  const [mobileSessionId, setMobileSessionId] = useState<string | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isUploaded, setIsUploaded] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showExitWarning, setShowExitWarning] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const cameraInputRef = useRef<HTMLInputElement>(null);
+  const isConnectedRef = useRef(false);
 
+  // Conectar com o desktop ao montar
   useEffect(() => {
-    if (!sessionId) {
+    if (!desktopSessionId) {
       setError("Sessão inválida. Por favor, escaneie o QR Code novamente.");
+      return;
     }
 
-    // Encerrar sessão quando o usuário sai da página
+    const connectToDesktop = async () => {
+      try {
+        const response = await fetch("/api/mobile-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            desktopSessionId,
+            action: "connect",
+          }),
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          setMobileSessionId(data.mobileSessionId);
+          sessionStorage.setItem(MOBILE_SESSION_KEY, data.mobileSessionId);
+          isConnectedRef.current = true;
+        } else {
+          setError("Erro ao conectar. Por favor, tente novamente.");
+        }
+      } catch (err) {
+        console.error("Erro ao conectar:", err);
+        setError("Erro de conexão. Verifique sua internet.");
+      }
+    };
+
+    connectToDesktop();
+  }, [desktopSessionId]);
+
+  // Detectar quando usuário tenta sair da página
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (isConnectedRef.current) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+
+    const handleRouteChange = () => {
+      if (isConnectedRef.current) {
+        setShowExitWarning(true);
+        return false;
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    
     return () => {
-      if (sessionId) {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      
+      // Ao desmontar, desconectar e gerar novo ID
+      if (mobileSessionId) {
         fetch("/api/mobile-session", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            session: sessionId,
-            action: "close",
+            mobileSessionId,
+            action: "disconnect",
           }),
-        }).catch(err => console.error("Erro ao encerrar sessão:", err));
+        }).catch(err => console.error("Erro ao desconectar:", err));
+        
+        // Gerar novo ID independente
+        const newMobileId = uuidv4();
+        sessionStorage.setItem(MOBILE_SESSION_KEY, newMobileId);
       }
     };
-  }, [sessionId]);
+  }, [mobileSessionId]);
 
   const handleFileChange = async (file: File | null) => {
-    if (!file || !sessionId) return;
+    if (!file || !mobileSessionId) return;
 
     if (!file.type.startsWith("image/")) {
       setError("Por favor, selecione uma imagem válida.");
@@ -48,7 +118,28 @@ function MobileUploadContent() {
     setError(null);
     const reader = new FileReader();
     reader.onloadend = async () => {
-      const imageData = reader.result as string;
+      let imageData = reader.result as string;
+      
+      // Processar e corrigir orientação se necessário
+      try {
+        const img = document.createElement('img');
+        img.src = imageData;
+        await new Promise((resolve) => { img.onload = resolve; });
+        
+        const canvas = document.createElement('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        canvas.width = img.width;
+        canvas.height = img.height;
+        
+        if (ctx) {
+          ctx.drawImage(img, 0, 0);
+          imageData = canvas.toDataURL('image/jpeg', 0.95);
+        }
+      } catch (error) {
+        console.error("Erro ao processar imagem:", error);
+      }
+      
       setPreview(imageData);
 
       // Enviar imagem para o servidor
@@ -59,19 +150,22 @@ function MobileUploadContent() {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            session: sessionId,
+            mobileSessionId,
             imageData: imageData,
+            action: "upload",
           }),
         });
 
         if (response.ok) {
           setIsUploaded(true);
-          // Resetar após 2 segundos para permitir novo envio
-          setTimeout(() => {
-            setIsUploaded(false);
-          }, 2000);
         } else {
-          setError("Erro ao enviar imagem. Tente novamente.");
+          const data = await response.json();
+          if (response.status === 404 || response.status === 410) {
+            setError("Sessão expirada. Por favor, escaneie o QR Code novamente.");
+            isConnectedRef.current = false;
+          } else {
+            setError("Erro ao enviar imagem. Tente novamente.");
+          }
         }
       } catch (err) {
         setError("Erro ao enviar imagem. Verifique sua conexão.");
@@ -93,7 +187,32 @@ function MobileUploadContent() {
     if (cameraInputRef.current) cameraInputRef.current.value = "";
   };
 
-  if (!sessionId) {
+  const handleConfirmExit = () => {
+    isConnectedRef.current = false;
+    setShowExitWarning(false);
+    
+    // Desconectar e gerar novo ID
+    if (mobileSessionId) {
+      fetch("/api/mobile-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          mobileSessionId,
+          action: "disconnect",
+        }),
+      }).catch(err => console.error("Erro ao desconectar:", err));
+      
+      const newMobileId = uuidv4();
+      sessionStorage.setItem(MOBILE_SESSION_KEY, newMobileId);
+      setMobileSessionId(newMobileId);
+    }
+    
+    router.push('/');
+  };
+
+  if (!desktopSessionId) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center p-4">
         <div className="text-center space-y-4">
@@ -129,7 +248,6 @@ function MobileUploadContent() {
                 alt="Imagem enviada"
                 fill
                 className="object-contain"
-                style={{ transform: 'scaleX(-1)' }}
               />
             </div>
           )}
@@ -137,6 +255,29 @@ function MobileUploadContent() {
             Enviar Outra Imagem
           </Button>
         </div>
+
+        {/* Modal de aviso de saída */}
+        <Dialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <AlertCircle className="h-5 w-5 text-yellow-600" />
+                Sair da sessão?
+              </DialogTitle>
+              <DialogDescription>
+                Ao sair desta tela, sua conexão com o computador será encerrada e uma nova sessão independente será criada.
+              </DialogDescription>
+            </DialogHeader>
+            <div className="flex gap-3 justify-end">
+              <Button variant="outline" onClick={() => setShowExitWarning(false)}>
+                Cancelar
+              </Button>
+              <Button onClick={handleConfirmExit}>
+                Confirmar
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     );
   }
@@ -165,7 +306,6 @@ function MobileUploadContent() {
                 alt="Preview"
                 fill
                 className="object-contain"
-                style={{ transform: 'scaleX(-1)' }}
               />
               <Button
                 variant="destructive"
@@ -229,6 +369,29 @@ function MobileUploadContent() {
           </div>
         )}
       </div>
+
+      {/* Modal de aviso de saída */}
+      <Dialog open={showExitWarning} onOpenChange={setShowExitWarning}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <AlertCircle className="h-5 w-5 text-yellow-600" />
+              Sair da sessão?
+            </DialogTitle>
+            <DialogDescription>
+              Ao sair desta tela, sua conexão com o computador será encerrada e uma nova sessão independente será criada.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex gap-3 justify-end">
+            <Button variant="outline" onClick={() => setShowExitWarning(false)}>
+              Cancelar
+            </Button>
+            <Button onClick={handleConfirmExit}>
+              Confirmar
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

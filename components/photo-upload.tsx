@@ -9,9 +9,13 @@ import { ResultModal } from "./result-modal";
 import { ErrorModal } from "./error-modal";
 import { QRCodeUploadModal } from "./qrcode-upload-modal";
 import { useI18n } from "./i18n-provider";
+import { useMobileConnection } from "./mobile-connection-provider";
+import { useSessionId } from "@/hooks/use-session-id";
 
 export function PhotoUpload() {
   const { t } = useI18n();
+  const { sessionId: desktopSessionId, isLoading: sessionLoading } = useSessionId();
+  const { setSessionId: setContextSessionId } = useMobileConnection();
   const [preview, setPreview] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -20,7 +24,6 @@ export function PhotoUpload() {
   const [showResultModal, setShowResultModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showQRCodeModal, setShowQRCodeModal] = useState(false);
-  const [sessionId, setSessionId] = useState<string>("");
   const [prediction, setPrediction] = useState<{ class: string; confidence?: number; uploadedImage?: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -126,26 +129,32 @@ export function PhotoUpload() {
   };
 
   const handleOpenQRCode = () => {
-    // Gerar ID de sessão único
-    const newSessionId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
-    setSessionId(newSessionId);
+    if (!desktopSessionId) return;
+    setContextSessionId(desktopSessionId);
     setShowQRCodeModal(true);
   };
 
   const handleImageFromMobile = (imageData: string) => {
-    setPreview(imageData);
-    // Converter base64 para File
-    fetch(imageData)
-      .then(res => res.blob())
-      .then(blob => {
-        const file = new File([blob], "mobile-upload.jpg", { type: "image/jpeg" });
-        setCurrentFile(file);
-        setUploadError(null);
-      })
-      .catch(err => {
-        console.error("Erro ao processar imagem do celular:", err);
-        setUploadError("Erro ao processar imagem do celular");
-      });
+    // Limpar preview e arquivo anterior completamente
+    setPreview(null);
+    setCurrentFile(null);
+    
+    // Pequeno delay para garantir que o estado foi limpo
+    setTimeout(() => {
+      setPreview(imageData);
+      // Converter base64 para File
+      fetch(imageData)
+        .then(res => res.blob())
+        .then(blob => {
+          const file = new File([blob], "mobile-upload.jpg", { type: "image/jpeg" });
+          setCurrentFile(file);
+          setUploadError(null);
+        })
+        .catch(err => {
+          console.error("Erro ao processar imagem do celular:", err);
+          setUploadError("Erro ao processar imagem do celular");
+        });
+    }, 100);
   };
 
   return (
@@ -296,7 +305,7 @@ export function PhotoUpload() {
         open={showQRCodeModal}
         onOpenChange={setShowQRCodeModal}
         onImageReceived={handleImageFromMobile}
-        sessionId={sessionId}
+        desktopSessionId={desktopSessionId || ""}
       />
     </div>
   );

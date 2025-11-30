@@ -10,26 +10,29 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { useI18n } from "./i18n-provider";
+import { useMobileConnection } from "./mobile-connection-provider";
 import { Loader2 } from "lucide-react";
 
 interface QRCodeUploadModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onImageReceived: (imageData: string) => void;
-  sessionId: string;
+  desktopSessionId: string;
 }
 
 export function QRCodeUploadModal({
   open,
   onOpenChange,
   onImageReceived,
-  sessionId,
+  desktopSessionId,
 }: QRCodeUploadModalProps) {
   const { t } = useI18n();
-  const [isWaiting, setIsWaiting] = useState(false);
+  const { setIsConnected } = useMobileConnection();
   const [qrSize, setQrSize] = useState(200);
+  
+  // URL contém apenas o desktopSessionId
   const uploadUrl = typeof window !== "undefined" 
-    ? `${window.location.origin}/mobile-upload?session=${sessionId}`
+    ? `${window.location.origin}/mobile-upload?desktopSessionId=${desktopSessionId}`
     : "";
 
   useEffect(() => {
@@ -43,39 +46,24 @@ export function QRCodeUploadModal({
 
   useEffect(() => {
     if (!open) {
-      setIsWaiting(false);
       return;
     }
 
-    // Ativar a sessão quando o modal é aberto
-    const activateSession = async () => {
+    // Polling para verificar conexão e se uma imagem foi enviada
+    const checkForUpdates = async () => {
       try {
-        await fetch("/api/mobile-session", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            session: sessionId,
-            action: "activate",
-          }),
-        });
-      } catch (error) {
-        console.error("Erro ao ativar sessão:", error);
-      }
-    };
-
-    activateSession();
-
-    // Polling para verificar se uma imagem foi enviada
-    const checkForImage = async () => {
-      try {
-        const response = await fetch(`/api/check-upload?session=${sessionId}`);
+        const response = await fetch(`/api/check-upload?desktopSessionId=${desktopSessionId}`);
         if (response.ok) {
           const data = await response.json();
+          
+          // Atualizar status de conexão
+          if (data.hasConnection) {
+            setIsConnected(true);
+          }
+          
+          // Se recebeu imagem, processar
           if (data.imageData) {
             onImageReceived(data.imageData);
-            onOpenChange(false);
           }
         }
       } catch (error) {
@@ -83,9 +71,11 @@ export function QRCodeUploadModal({
       }
     };
 
-    const interval = setInterval(checkForImage, 2000);
-    return () => clearInterval(interval);
-  }, [open, sessionId, onImageReceived, onOpenChange]);
+    const interval = setInterval(checkForUpdates, 2000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [open, desktopSessionId, onImageReceived, setIsConnected]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -123,14 +113,6 @@ export function QRCodeUploadModal({
               <li>A imagem aparecerá aqui</li>
             </ol>
           </div>
-
-          {/* Status de aguardando */}
-          {isWaiting && (
-            <div className="flex items-center gap-2 text-xs text-muted-foreground">
-              <Loader2 className="h-3 w-3 animate-spin" />
-              <span>{t("home.waitingForImage")}</span>
-            </div>
-          )}
         </div>
       </DialogContent>
     </Dialog>

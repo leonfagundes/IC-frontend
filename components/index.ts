@@ -8,3 +8,5 @@ export { HelpButton } from "./help-button";
 export { ResultModal } from "./result-modal";
 export { ErrorModal } from "./error-modal";
 export { QRCodeUploadModal } from "./qrcode-upload-modal";
+export { MobileConnectionProvider, useMobileConnection } from "./mobile-connection-provider";
+export { MobileLinkStatus } from "./mobile-link-status";

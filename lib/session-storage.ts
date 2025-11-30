@@ -1,11 +1,19 @@
 // Armazenamento temporário em memória (em produção, usar Redis ou banco de dados)
-export const uploadSessions = new Map<string, { imageData?: string; timestamp: number; active: boolean }>();
+interface SessionData {
+  desktopSessionId: string;
+  mobileSessionId?: string;
+  imageData?: string;
+  timestamp: number;
+  active: boolean;
+  expiresAt: number;
+}
 
-// Limpar sessões antigas (mais de 10 minutos)
+export const uploadSessions = new Map<string, SessionData>();
+
 export function cleanOldSessions() {
-  const tenMinutesAgo = Date.now() - 10 * 60 * 1000;
+  const now = Date.now();
   for (const [sessionId, session] of uploadSessions.entries()) {
-    if (session.timestamp < tenMinutesAgo || !session.active) {
+    if (now > session.expiresAt || !session.active) {
       uploadSessions.delete(sessionId);
     }
   }

@@ -6,25 +6,38 @@ export async function GET(request: NextRequest) {
     cleanOldSessions();
     
     const searchParams = request.nextUrl.searchParams;
-    const session = searchParams.get("session");
+    const desktopSessionId = searchParams.get("desktopSessionId");
 
-    if (!session) {
+    if (!desktopSessionId) {
       return NextResponse.json(
-        { error: "Session ID is required" },
+        { error: "Desktop session ID is required" },
         { status: 400 }
       );
     }
 
-    const sessionData = uploadSessions.get(session);
+    const sessionData = uploadSessions.get(desktopSessionId);
     
     if (sessionData?.imageData) {
       const imageData = sessionData.imageData;
-      // Limpar a imagem da sessão após recuperá-la
-      uploadSessions.delete(session);
-      return NextResponse.json({ imageData });
+      
+      // Limpar imageData mas manter sessão ativa
+      const now = Date.now();
+      uploadSessions.set(desktopSessionId, {
+        ...sessionData,
+        imageData: undefined,
+        timestamp: now,
+      });
+      
+      return NextResponse.json({ 
+        imageData,
+        hasConnection: !!sessionData.mobileSessionId 
+      });
     }
 
-    return NextResponse.json({ imageData: null });
+    return NextResponse.json({ 
+      imageData: null,
+      hasConnection: !!sessionData?.mobileSessionId 
+    });
   } catch (error) {
     console.error("Error in check-upload API:", error);
     return NextResponse.json(
