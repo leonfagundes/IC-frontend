@@ -201,10 +201,14 @@ export default function MobileUploadPage() {
   }
 
   if (error || !session) {
-    // Auto-redirecionar após 3 segundos
-    setTimeout(() => {
-      router.push('/');
-    }, 3000);
+    // Só redirecionar se for erro de sessão expirada ou fechada
+    const shouldRedirect = error?.includes('expirada') || error?.includes('não encontrada');
+    
+    if (shouldRedirect) {
+      setTimeout(() => {
+        router.push('/');
+      }, 3000);
+    }
 
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-100 dark:from-gray-900 dark:to-gray-800 p-4">
