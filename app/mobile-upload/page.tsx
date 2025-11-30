@@ -19,6 +19,22 @@ function MobileUploadContent() {
     if (!sessionId) {
       setError("Sessão inválida. Por favor, escaneie o QR Code novamente.");
     }
+
+    // Encerrar sessão quando o usuário sai da página
+    return () => {
+      if (sessionId) {
+        fetch("/api/mobile-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            session: sessionId,
+            action: "close",
+          }),
+        }).catch(err => console.error("Erro ao encerrar sessão:", err));
+      }
+    };
   }, [sessionId]);
 
   const handleFileChange = async (file: File | null) => {

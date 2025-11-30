@@ -47,6 +47,26 @@ export function QRCodeUploadModal({
       return;
     }
 
+    // Ativar a sessão quando o modal é aberto
+    const activateSession = async () => {
+      try {
+        await fetch("/api/mobile-session", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            session: sessionId,
+            action: "activate",
+          }),
+        });
+      } catch (error) {
+        console.error("Erro ao ativar sessão:", error);
+      }
+    };
+
+    activateSession();
+
     // Polling para verificar se uma imagem foi enviada
     const checkForImage = async () => {
       try {
