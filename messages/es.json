@@ -136,5 +136,52 @@
     "frontendDesc": "Interfaz de usuario y sistema web",
     "backend": "Backend",
     "backendDesc": "API y modelo de inteligencia artificial"
+  },
+  "qrcode": {
+    "title": "Enviar desde Móvil",
+    "description": "Escanee el código QR a continuación con su móvil para enviar imágenes",
+    "sessionExpires": "Sesión expira en:",
+    "expired": "Expirado",
+    "howToLink": "Cómo vincular:",
+    "step1": "Abra la cámara de su móvil",
+    "step2": "Apunte al código QR arriba",
+    "step3": "Toque la notificación que aparezca",
+    "step4": "Seleccione o tome la foto deseada",
+    "orAccessDirectly": "O acceda directamente:",
+    "accessDirectly": "Acceder directamente",
+    "openGuide": "Abrir guía",
+    "close": "Cerrar"
+  },
+  "sessionCard": {
+    "title": "Sesión Móvil",
+    "waitingConnection": "Esperando conexión",
+    "phoneConnected": "Móvil conectado",
+    "sessionExpired": "Sesión expirada",
+    "sessionClosed": "Sesión cerrada",
+    "time": "Tiempo:"
+  },
+  "mobileUpload": {
+    "connecting": "Conectando...",
+    "error": "Error",
+    "sessionNotFound": "Sesión no encontrada",
+    "goToHome": "Ir a Inicio",
+    "title": "Carga Móvil",
+    "subtitle": "Envíe sus imágenes de resonancia magnética",
+    "sessionStatus": "Estado de la Sesión",
+    "connected": "✓ Conectado",
+    "waiting": "Esperando...",
+    "endSession": "Finalizar Sesión",
+    "selectImages": "Seleccione sus imágenes",
+    "uploadInfo": "Puede enviar varias imágenes o tomar una foto",
+    "selectFromGallery": "Seleccionar de la Galería",
+    "takePhoto": "Tomar Foto",
+    "sending": "Enviando...",
+    "imagesSent": "Imágenes Enviadas",
+    "sessionClosedTitle": "Sesión Cerrada",
+    "sessionExpiredDesc": "La sesión de carga expiró debido al tiempo límite. Por favor, inicie una nueva sesión en el escritorio.",
+    "sessionClosedDesc": "La sesión de carga fue cerrada. Será redirigido a la página de inicio.",
+    "imageTooLargeTitle": "Imagen Demasiado Grande",
+    "imageTooLargeDesc": "La imagen seleccionada es demasiado grande y no se puede cargar. Por favor, elija otra imagen más pequeña o tome una nueva foto.",
+    "understood": "Entendido"
   }
 }

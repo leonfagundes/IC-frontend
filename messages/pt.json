@@ -136,5 +136,52 @@
     "frontendDesc": "Interface do usuário e sistema web",
     "backend": "Backend",
     "backendDesc": "API e modelo de inteligência artificial"
+  },
+  "qrcode": {
+    "title": "Enviar pelo Celular",
+    "description": "Escaneie o QR Code abaixo com seu celular para enviar imagens",
+    "sessionExpires": "Sessão expira em:",
+    "expired": "Expirado",
+    "howToLink": "Como vincular:",
+    "step1": "Abra a câmera do seu celular",
+    "step2": "Aponte para o QR Code acima",
+    "step3": "Toque na notificação que aparecer",
+    "step4": "Selecione ou tire a foto desejada",
+    "orAccessDirectly": "Ou acesse diretamente:",
+    "accessDirectly": "Acessar diretamente",
+    "openGuide": "Abrir guia",
+    "close": "Fechar"
+  },
+  "sessionCard": {
+    "title": "Sessão Mobile",
+    "waitingConnection": "Aguardando conexão",
+    "phoneConnected": "Celular conectado",
+    "sessionExpired": "Sessão expirada",
+    "sessionClosed": "Sessão encerrada",
+    "time": "Tempo:"
+  },
+  "mobileUpload": {
+    "connecting": "Conectando...",
+    "error": "Erro",
+    "sessionNotFound": "Sessão não encontrada",
+    "goToHome": "Ir para Home",
+    "title": "Upload Mobile",
+    "subtitle": "Envie suas imagens de ressonância magnética",
+    "sessionStatus": "Status da Sessão",
+    "connected": "✓ Conectado",
+    "waiting": "Aguardando...",
+    "endSession": "Encerrar Sessão",
+    "selectImages": "Selecione suas imagens",
+    "uploadInfo": "Você pode enviar várias imagens ou tirar uma foto",
+    "selectFromGallery": "Selecionar da Galeria",
+    "takePhoto": "Tirar Foto",
+    "sending": "Enviando...",
+    "imagesSent": "Imagens Enviadas",
+    "sessionClosedTitle": "Sessão Encerrada",
+    "sessionExpiredDesc": "A sessão de upload expirou devido ao tempo limite. Por favor, inicie uma nova sessão no desktop.",
+    "sessionClosedDesc": "A sessão de upload foi encerrada. Você será redirecionado para a página inicial.",
+    "imageTooLargeTitle": "Imagem Muito Grande",
+    "imageTooLargeDesc": "A imagem selecionada é muito grande e não pode ser enviada. Por favor, escolha outra imagem menor ou tire uma nova foto.",
+    "understood": "Entendi"
   }
 }

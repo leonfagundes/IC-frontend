@@ -142,8 +142,15 @@ export const useSession = (sessionId?: string) => {
         setLoading(false);
       },
       (err) => {
-        setError(err.message);
-        setLoading(false);
+        // Se o erro é de permissão (permission-denied), significa que a sessão foi encerrada
+        if (err.code === 'permission-denied') {
+          // Definir sessão como encerrada para acionar o modal
+          setSession(prev => prev ? { ...prev, status: 'closed' } : null);
+          setLoading(false);
+        } else {
+          setError(err.message);
+          setLoading(false);
+        }
       }
     );
 

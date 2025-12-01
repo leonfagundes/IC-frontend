@@ -16,8 +16,10 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog';
+import { useI18n } from '@/components/i18n-provider';
 
 export default function MobileUploadPage() {
+  const { t } = useI18n();
   const params = useParams();
   const sessionId = params?.sessionId as string;
   const router = useRouter();
@@ -186,7 +188,8 @@ export default function MobileUploadPage() {
   // Redirecionar para home após fechar modal
   const handleModalClose = () => {
     setShowClosedModal(false);
-    router.push('/');
+    // Usar replace para não permitir voltar com o botão voltar
+    router.replace('/');
   };
 
   if (loading) {
@@ -194,33 +197,24 @@ export default function MobileUploadPage() {
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:to-gray-800">
         <div className="text-center">
           <Loader2 className="h-12 w-12 animate-spin mx-auto mb-4 text-primary" />
-          <p className="text-lg">Conectando...</p>
+          <p className="text-lg">{t('mobileUpload.connecting')}</p>
         </div>
       </div>
     );
   }
 
   if (error || !session) {
-    // Só redirecionar se for erro de sessão expirada ou fechada
-    const shouldRedirect = error?.includes('expirada') || error?.includes('não encontrada');
-    
-    if (shouldRedirect) {
-      setTimeout(() => {
-        router.push('/');
-      }, 3000);
-    }
-
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-yellow-100 dark:from-gray-900 dark:to-gray-800 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-pink-100 dark:from-gray-900 dark:to-gray-800 p-4">
         <Card className="p-6 max-w-md w-full text-center">
-          <AlertCircle className="h-12 w-12 text-orange-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Sessão Expirada</h2>
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">{t('mobileUpload.error')}</h2>
           <p className="text-muted-foreground mb-4">
-            Sua sessão expirou. Você será redirecionado...
+            {error || t('mobileUpload.sessionNotFound')}
           </p>
-          <div className="flex justify-center">
-            <Loader2 className="h-6 w-6 animate-spin text-primary" />
-          </div>
+          <Button onClick={() => router.push('/')}>
+            {t('mobileUpload.goToHome')}
+          </Button>
         </Card>
       </div>
     );
@@ -235,9 +229,9 @@ export default function MobileUploadPage() {
             <div className="flex justify-center mb-4">
               <Smartphone className="h-16 w-16 text-primary" />
             </div>
-            <h1 className="text-3xl font-bold mb-2">Upload Mobile</h1>
+            <h1 className="text-3xl font-bold mb-2">{t('mobileUpload.title')}</h1>
             <p className="text-muted-foreground">
-              Envie suas imagens de ressonância magnética
+              {t('mobileUpload.subtitle')}
             </p>
           </div>
 
@@ -245,9 +239,9 @@ export default function MobileUploadPage() {
           <Card className="p-6 mb-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="font-semibold">Status da Sessão</h3>
+                <h3 className="font-semibold">{t('mobileUpload.sessionStatus')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {session.status === 'active' ? '✓ Conectado' : 'Aguardando...'}
+                  {session.status === 'active' ? t('mobileUpload.connected') : t('mobileUpload.waiting')}
                 </p>
               </div>
               <Button
@@ -256,7 +250,7 @@ export default function MobileUploadPage() {
                 onClick={handleEndSession}
                 disabled={session.status !== 'active'}
               >
-                Encerrar Sessão
+                {t('mobileUpload.endSession')}
               </Button>
             </div>
           </Card>
@@ -266,10 +260,10 @@ export default function MobileUploadPage() {
             <div className="text-center mb-6">
               <Upload className="h-12 w-12 mx-auto mb-4 text-primary" />
               <h2 className="text-xl font-semibold mb-2">
-                Selecione suas imagens
+                {t('mobileUpload.selectImages')}
               </h2>
               <p className="text-sm text-muted-foreground">
-                Você pode enviar várias imagens ou tirar uma foto
+                {t('mobileUpload.uploadInfo')}
               </p>
             </div>
 
@@ -278,7 +272,7 @@ export default function MobileUploadPage() {
               <label className="block">
                 <div className="w-full py-3 px-6 rounded-lg border-2 border-primary bg-primary text-primary-foreground hover:bg-primary/90 font-semibold text-center cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   <ImageIcon className="h-5 w-5" />
-                  Selecionar da Galeria
+                  {t('mobileUpload.selectFromGallery')}
                 </div>
                 <input
                   type="file"
@@ -294,7 +288,7 @@ export default function MobileUploadPage() {
               <label className="block">
                 <div className="w-full py-3 px-6 rounded-lg border-2 border-green-700 bg-green-700 text-white hover:bg-green-800 font-semibold text-center cursor-pointer transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2">
                   <Smartphone className="h-5 w-5" />
-                  Tirar Foto
+                  {t('mobileUpload.takePhoto')}
                 </div>
                 <input
                   type="file"
@@ -310,7 +304,7 @@ export default function MobileUploadPage() {
             {uploading && (
               <div className="mt-4 text-center">
                 <Loader2 className="h-8 w-8 animate-spin mx-auto text-primary" />
-                <p className="text-sm text-muted-foreground mt-2">Enviando...</p>
+                <p className="text-sm text-muted-foreground mt-2">{t('mobileUpload.sending')}</p>
               </div>
             )}
           </Card>
@@ -320,7 +314,7 @@ export default function MobileUploadPage() {
             <Card className="p-6 mt-6">
               <h3 className="font-semibold mb-4 flex items-center gap-2">
                 <CheckCircle2 className="h-5 w-5 text-green-500" />
-                Imagens Enviadas ({uploadedFiles.length})
+                {t('mobileUpload.imagesSent')} ({uploadedFiles.length})
               </h3>
               <ul className="space-y-2">
                 {uploadedFiles.map((filename, index) => (
@@ -340,17 +334,21 @@ export default function MobileUploadPage() {
 
       {/* Modal de Sessão Encerrada */}
       <Dialog open={showClosedModal} onOpenChange={handleModalClose}>
-        <DialogContent>
+        <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>Sessão Encerrada</DialogTitle>
-            <DialogDescription>
-              A sessão de upload mobile foi {session.status === 'expired' ? 'expirada' : 'encerrada'}.
-              Você será redirecionado para a página inicial.
+            <DialogTitle className="flex items-center gap-2 text-xl">
+              <AlertCircle className="h-6 w-6 text-orange-500" />
+              {t('mobileUpload.sessionClosedTitle')}
+            </DialogTitle>
+            <DialogDescription className="text-base pt-2">
+              {session?.status === 'expired' 
+                ? t('mobileUpload.sessionExpiredDesc')
+                : t('mobileUpload.sessionClosedDesc')}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2 mt-4">
-            <Button onClick={handleModalClose}>
-              OK
+            <Button onClick={handleModalClose} className="w-full sm:w-auto">
+              {t('mobileUpload.goToHome')}
             </Button>
           </div>
         </DialogContent>
@@ -362,15 +360,15 @@ export default function MobileUploadPage() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-orange-500" />
-              Imagem Muito Grande
+              {t('mobileUpload.imageTooLargeTitle')}
             </DialogTitle>
             <DialogDescription>
-              A imagem selecionada é muito grande e não pode ser enviada. Por favor, escolha outra imagem menor ou tire uma nova foto.
+              {t('mobileUpload.imageTooLargeDesc')}
             </DialogDescription>
           </DialogHeader>
           <div className="flex justify-end gap-2 mt-4">
             <Button onClick={() => setShowImageTooLargeModal(false)}>
-              Entendi
+              {t('mobileUpload.understood')}
             </Button>
           </div>
         </DialogContent>

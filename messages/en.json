@@ -136,5 +136,52 @@
     "frontendDesc": "User interface and web system",
     "backend": "Backend",
     "backendDesc": "API and artificial intelligence model"
+  },
+  "qrcode": {
+    "title": "Upload from Phone",
+    "description": "Scan the QR Code below with your phone to upload images",
+    "sessionExpires": "Session expires in:",
+    "expired": "Expired",
+    "howToLink": "How to link:",
+    "step1": "Open your phone's camera",
+    "step2": "Point at the QR Code above",
+    "step3": "Tap the notification that appears",
+    "step4": "Select or take the desired photo",
+    "orAccessDirectly": "Or access directly:",
+    "accessDirectly": "Access directly",
+    "openGuide": "Open guide",
+    "close": "Close"
+  },
+  "sessionCard": {
+    "title": "Mobile Session",
+    "waitingConnection": "Waiting for connection",
+    "phoneConnected": "Phone connected",
+    "sessionExpired": "Session expired",
+    "sessionClosed": "Session closed",
+    "time": "Time:"
+  },
+  "mobileUpload": {
+    "connecting": "Connecting...",
+    "error": "Error",
+    "sessionNotFound": "Session not found",
+    "goToHome": "Go to Home",
+    "title": "Mobile Upload",
+    "subtitle": "Upload your MRI images",
+    "sessionStatus": "Session Status",
+    "connected": "✓ Connected",
+    "waiting": "Waiting...",
+    "endSession": "End Session",
+    "selectImages": "Select your images",
+    "uploadInfo": "You can upload multiple images or take a photo",
+    "selectFromGallery": "Select from Gallery",
+    "takePhoto": "Take Photo",
+    "sending": "Sending...",
+    "imagesSent": "Images Sent",
+    "sessionClosedTitle": "Session Closed",
+    "sessionExpiredDesc": "The upload session expired due to timeout. Please start a new session on desktop.",
+    "sessionClosedDesc": "The upload session was closed. You will be redirected to the home page.",
+    "imageTooLargeTitle": "Image Too Large",
+    "imageTooLargeDesc": "The selected image is too large and cannot be uploaded. Please choose a smaller image or take a new photo.",
+    "understood": "I Understand"
   }
 }

@@ -11,6 +11,7 @@ import {
   DialogDescription,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import { useI18n } from './i18n-provider';
 
 interface QRCodeModalProps {
   isOpen: boolean;
@@ -20,6 +21,7 @@ interface QRCodeModalProps {
 }
 
 export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeModalProps) {
+  const { t } = useI18n();
   const [timeRemaining, setTimeRemaining] = useState<string>('');
   const [showGuide, setShowGuide] = useState(true);
   
@@ -35,7 +37,7 @@ export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeMod
       const remaining = expiresAt.getTime() - now;
       
       if (remaining <= 0) {
-        setTimeRemaining('Expirado');
+        setTimeRemaining(t('qrcode.expired'));
         return;
       }
 
@@ -56,10 +58,10 @@ export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeMod
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2 text-lg sm:text-xl">
             <Smartphone className="h-5 w-5" />
-            Enviar pelo Celular
+            {t('qrcode.title')}
           </DialogTitle>
           <DialogDescription className="text-sm sm:text-base">
-            Escaneie o QR Code abaixo com seu celular para enviar imagens
+            {t('qrcode.description')}
           </DialogDescription>
         </DialogHeader>
 
@@ -78,7 +80,7 @@ export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeMod
           {expiresAt && (
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Clock className="h-4 w-4" />
-              <span>Sessão expira em: <strong>{timeRemaining}</strong></span>
+              <span>{t('qrcode.sessionExpires')} <strong>{timeRemaining}</strong></span>
             </div>
           )}
 
@@ -86,20 +88,20 @@ export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeMod
           <div className="w-full">
             {showGuide ? (
               <div className="space-y-2">
-                <p className="text-sm font-semibold text-center">Como vincular:</p>
+                <p className="text-sm font-semibold text-center">{t('qrcode.howToLink')}</p>
                 <ol className="text-xs text-muted-foreground space-y-1 list-decimal list-inside">
-                  <li>Abra a câmera do seu celular</li>
-                  <li>Aponte para o QR Code acima</li>
-                  <li>Toque na notificação que aparecer</li>
-                  <li>Selecione ou tire a foto desejada</li>
+                  <li>{t('qrcode.step1')}</li>
+                  <li>{t('qrcode.step2')}</li>
+                  <li>{t('qrcode.step3')}</li>
+                  <li>{t('qrcode.step4')}</li>
                 </ol>
               </div>
             ) : (
               <>
                 <p className="text-xs text-muted-foreground mb-2 text-center">
-                  Ou acesse diretamente:
+                  {t('qrcode.orAccessDirectly')}
                 </p>
-                <div className="bg-muted p-3 rounded text-xs break-all text-center">
+                <div className="bg-muted p-3 rounded text-[10px] sm:text-xs break-all text-center font-bold">
                   {mobileUrl}
                 </div>
               </>
@@ -112,10 +114,10 @@ export function QRCodeModal({ isOpen, onClose, sessionId, expiresAt }: QRCodeMod
             variant="outline"
             onClick={() => setShowGuide(!showGuide)}
           >
-            {showGuide ? 'Acessar diretamente' : 'Abrir guia'}
+            {showGuide ? t('qrcode.accessDirectly') : t('qrcode.openGuide')}
           </Button>
           <Button variant="outline" onClick={onClose}>
-            Fechar
+            {t('qrcode.close')}
           </Button>
         </div>
       </DialogContent>

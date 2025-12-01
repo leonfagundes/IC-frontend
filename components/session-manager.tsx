@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { SessionCard } from './session-card';
 import { useSession } from '@/lib/hooks/useSession';
 
@@ -17,6 +17,13 @@ export function SessionManager({ children }: SessionManagerProps) {
     (window as any).__setActiveSession = setActiveSessionId;
   }
 
+  // Auto-fechar card quando sessão for encerrada
+  useEffect(() => {
+    if (session?.status === 'closed' || session?.status === 'expired') {
+      setActiveSessionId(null);
+    }
+  }, [session?.status]);
+
   const handleCloseSession = async () => {
     if (activeSessionId) {
       await closeSession(activeSessionId);
@@ -29,7 +36,7 @@ export function SessionManager({ children }: SessionManagerProps) {
       {children}
       
       {/* SessionCard fixo no canto superior direito */}
-      {session && (session.status === 'pending' || session.status === 'active') && (
+      {session && activeSessionId && (
         <SessionCard
           session={session}
           onClose={handleCloseSession}

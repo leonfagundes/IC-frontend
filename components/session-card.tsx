@@ -5,6 +5,7 @@ import { Smartphone, X, Clock, Wifi, WifiOff } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Session } from '@/lib/types/session';
+import { useI18n } from './i18n-provider';
 
 interface SessionCardProps {
   session: Session;
@@ -12,6 +13,7 @@ interface SessionCardProps {
 }
 
 export function SessionCard({ session, onClose }: SessionCardProps) {
+  const { t } = useI18n();
   const [timeRemaining, setTimeRemaining] = useState<string>('');
 
   // Atualizar contador de tempo
@@ -41,28 +43,28 @@ export function SessionCard({ session, onClose }: SessionCardProps) {
     switch (session.status) {
       case 'pending':
         return {
-          text: 'Aguardando conexão',
+          text: t('sessionCard.waitingConnection'),
           color: 'text-yellow-600 dark:text-yellow-400',
           bgColor: 'bg-yellow-50 dark:bg-yellow-900/20',
           icon: <WifiOff className="h-4 w-4" />
         };
       case 'active':
         return {
-          text: 'Celular conectado',
+          text: t('sessionCard.phoneConnected'),
           color: 'text-green-600 dark:text-green-400',
           bgColor: 'bg-green-50 dark:bg-green-900/20',
           icon: <Wifi className="h-4 w-4" />
         };
       case 'expired':
         return {
-          text: 'Sessão expirada',
+          text: t('sessionCard.sessionExpired'),
           color: 'text-red-600 dark:text-red-400',
           bgColor: 'bg-red-50 dark:bg-red-900/20',
           icon: <Clock className="h-4 w-4" />
         };
       case 'closed':
         return {
-          text: 'Sessão encerrada',
+          text: t('sessionCard.sessionClosed'),
           color: 'text-gray-600 dark:text-gray-400',
           bgColor: 'bg-gray-50 dark:bg-gray-900/20',
           icon: <X className="h-4 w-4" />
@@ -78,7 +80,7 @@ export function SessionCard({ session, onClose }: SessionCardProps) {
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-1.5">
             <Smartphone className={`h-4 w-4 ${statusInfo.color}`} />
-            <h3 className="font-semibold text-xs">Sessão Mobile</h3>
+            <h3 className="font-semibold text-xs">{t('sessionCard.title')}</h3>
           </div>
           <Button
             variant="ghost"
@@ -100,7 +102,7 @@ export function SessionCard({ session, onClose }: SessionCardProps) {
           {/* Tempo restante */}
           {(session.status === 'pending' || session.status === 'active') && (
             <div className="flex items-center justify-between text-xs">
-              <span className="text-muted-foreground">Tempo:</span>
+              <span className="text-muted-foreground">{t('sessionCard.time')}</span>
               <span className="font-mono font-semibold">{timeRemaining}</span>
             </div>
           )}

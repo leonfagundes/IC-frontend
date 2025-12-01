@@ -273,7 +273,7 @@ export function PhotoUpload() {
           <Button
             variant="outline"
             onClick={handleMobileUpload}
-            className="flex items-center gap-2 rounded-lg"
+            className="flex items-center gap-2 rounded-lg bg-card hover:bg-muted/50 dark:bg-card dark:hover:bg-accent/80 border-border hover:border-primary/30 transition-colors"
           >
             <Smartphone className="h-4 w-4" />
             Carregar Imagem do Celular
